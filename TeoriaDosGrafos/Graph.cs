@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+
 namespace TeoriaDosGrafos
 {
 	public class Graph
@@ -6,7 +8,7 @@ namespace TeoriaDosGrafos
 		public Graph()
 		{
 		}
-		ArrayList<Vertice> vertices;
-		ArrayList<Edge> edges;
+		List<Vertice> vertices;
+		List<Edge> edges;
 	}
 }
