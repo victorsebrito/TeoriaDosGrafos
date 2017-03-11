@@ -1,0 +1,16 @@
+
+POST:
+/api/grafo
+-arquivo
+
+GET:
+/api/grafo (retorna o JSON)
+
+/api/existe-aresta
+-vertice1
+-vertice2
+
+/api/
+
+
+api/vertice/
