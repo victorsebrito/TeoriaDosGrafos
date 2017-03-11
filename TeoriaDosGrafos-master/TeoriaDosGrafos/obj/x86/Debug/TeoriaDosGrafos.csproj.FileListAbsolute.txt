@@ -1,0 +1,6 @@
+C:\Users\Alexandre\Desktop\TeoriaDosGrafos-master\TeoriaDosGrafos\bin\Debug\TeoriaDosGrafos.exe.config
+C:\Users\Alexandre\Desktop\TeoriaDosGrafos-master\TeoriaDosGrafos\bin\Debug\TeoriaDosGrafos.exe
+C:\Users\Alexandre\Desktop\TeoriaDosGrafos-master\TeoriaDosGrafos\bin\Debug\TeoriaDosGrafos.pdb
+C:\Users\Alexandre\Desktop\TeoriaDosGrafos-master\TeoriaDosGrafos\obj\x86\Debug\TeoriaDosGrafos.csprojResolveAssemblyReference.cache
+C:\Users\Alexandre\Desktop\TeoriaDosGrafos-master\TeoriaDosGrafos\obj\x86\Debug\TeoriaDosGrafos.exe
+C:\Users\Alexandre\Desktop\TeoriaDosGrafos-master\TeoriaDosGrafos\obj\x86\Debug\TeoriaDosGrafos.pdb
