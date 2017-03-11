@@ -1,13 +1,13 @@
 ﻿using System;
 namespace TeoriaDosGrafos
 {
-	public class Vertice
+	public class Vertex
 	{
-		public Vertice()
+		public Vertex()
 		{
 		}
 
-		int id;
-		string name;
-	}
+        public int id { get; set; }
+        public string name { get; set; }
+    }
 }
