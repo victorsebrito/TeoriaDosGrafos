@@ -1,24 +1,26 @@
 ﻿using System;
 using Grapevine.Server;
 using System.Threading;
+using TeoriaDosGrafos.Classes;
 
 namespace TeoriaDosGrafos 
 {
-    class MainClass
+    class Servidor
 	{
-        public static Graph graph { get; set; }
+        public static Grafo Grafo { get; set; }
+        public static RestServer Server { get; set; }
 
 		public static void Main(string[] args)
 		{
-            var server = new RESTServer();
-            server.Start();
+            Server = new RestServer();
+            Server.LogToConsole().Start();
 
-            while (server.IsListening)
+            while (Server.IsListening)
             {
                 Thread.Sleep(300);
             }
 
-            Console.WriteLine("Press Enter to Continue...");
+            Console.WriteLine("Pressione Enter para continuar...");
             Console.ReadLine();
 
       //      Graph graph = new Graph();
