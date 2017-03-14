@@ -64,7 +64,8 @@ namespace TeoriaDosGrafos.API
 
             if (aoArgs.ContainsKey("id"))
             {
-                if(Int32.TryParse(aoArgs["id"], out int liID))                
+				int liID;
+                if(Int32.TryParse(aoArgs["id"], out liID))                
                     loVertice = FindVerticeByID(liID);
                 else
                     context.Response.SendResponse(HttpStatusCode.BadRequest);

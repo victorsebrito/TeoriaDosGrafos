@@ -36,8 +36,6 @@ namespace TeoriaDosGrafos.API
         [RestRoute(HttpMethod = HttpMethod.GET, PathInfo = "api/grafo/grau")]
         public IHttpContext GetGrauGrafo(IHttpContext context)
         {
-            Dictionary<string, string> loArgs = APIUtil.GetDictionaryFromContext(context);
-            
             APIUtil.Grau[] loListGrau = { new APIUtil.Grau(APIUtil.Grau.TiposGrau.Mínimo),
                                           new APIUtil.Grau(APIUtil.Grau.TiposGrau.Médio),
                                           new APIUtil.Grau(APIUtil.Grau.TiposGrau.Máximo) };
