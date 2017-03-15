@@ -77,6 +77,33 @@ namespace TeoriaDosGrafos.API
         }
 
         /// <summary>
+        /// Verifica se o grafo é conexo.
+        /// </summary>
+        [RestRoute(HttpMethod = HttpMethod.GET, PathInfo = "api/grafo/conexo")]
+        public IHttpContext GetIsGrafoConexo(IHttpContext context)
+        {
+
+            context.Response.ContentType = ContentType.JSON;
+
+            foreach (Vertice loVertice in Servidor.Grafo.Vertices)
+            {
+                List<Vertice> loListaOutrosVertices = Servidor.Grafo.Vertices.Except(new List<Vertice>() { loVertice }).ToList();
+
+                foreach (Vertice loVertice2 in loListaOutrosVertices)
+                {
+                    if (!APIUtil.ExisteCaminhoEntreVertices(loVertice.ID, loVertice2.ID))
+                    {
+                        context.Response.SendResponse(JsonConvert.SerializeObject(false));
+                        return context;
+                    }
+                }
+            }
+            
+            context.Response.SendResponse(JsonConvert.SerializeObject(true));
+            return context;
+        }
+
+        /// <summary>
         /// Cria um novo grafo no servidor.
         /// Lê o grafo do arquivo se o parâmetro "file" (endereço do arquivo local) for enviado no corpo da solicitação.
         /// </summary>

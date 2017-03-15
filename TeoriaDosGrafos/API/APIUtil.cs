@@ -78,6 +78,48 @@ namespace TeoriaDosGrafos.API
         }
 
         /// <summary>
+        /// Verifica se existe um caminho entre dois vértices.
+        /// </summary>
+        /// <param name="aiVertice1"></param>
+        /// <param name="aiVertice2"></param>
+        /// <param name="aoListaVerticesVisitados"></param>
+        /// <returns></returns>
+        public static bool ExisteCaminhoEntreVertices(int aiVertice1, int aiVertice2, List<int> aoListaVerticesVisitados)
+        {
+
+            if (aoListaVerticesVisitados == null)
+                aoListaVerticesVisitados = new List<int>();
+            aoListaVerticesVisitados.Add(aiVertice1);
+
+            List<Vertice> loListaVerticesAdjacentes = FindVerticesAdjacentesByID(aiVertice1);
+
+            foreach(Vertice loVertice in loListaVerticesAdjacentes)
+            {
+                if (loVertice.ID == aiVertice2)
+                    return true;
+                else
+                {
+                    if (!aoListaVerticesVisitados.Contains(loVertice.ID))
+                        return ExisteCaminhoEntreVertices(loVertice.ID, aiVertice2, aoListaVerticesVisitados);
+                }
+
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Verifica se existe um caminho entre dois vértices.
+        /// </summary>
+        /// <param name="aiVertice1"></param>
+        /// <param name="aiVertice2"></param>
+        /// <returns></returns>
+        public static bool ExisteCaminhoEntreVertices(int aiVertice1, int aiVertice2)
+        {
+            return ExisteCaminhoEntreVertices(aiVertice1, aiVertice2, null);
+        }
+
+        /// <summary>
         /// Retorna a lista de vértices adjacentes ao vértice passado por parâmetro.
         /// </summary>
         /// <param name="aiID"></param>
