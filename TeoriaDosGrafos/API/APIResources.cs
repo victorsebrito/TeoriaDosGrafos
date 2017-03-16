@@ -103,6 +103,33 @@ namespace TeoriaDosGrafos.API
         }
 
         /// <summary>
+        /// Verifica se o grafo possui caminho de Euler.
+        /// </summary>
+        [RestRoute(HttpMethod = HttpMethod.GET, PathInfo = "api/grafo/euler")]
+        public IHttpContext GetPossuiCaminhoEuler(IHttpContext context)
+        {
+            context.Response.ContentType = ContentType.JSON;
+
+            int liNumVerticesGrauImpar = 0;
+
+            foreach (Vertice loVertice in Servidor.Grafo.Vertices)
+            {
+                if (APIUtil.GetGrauVertice(loVertice.ID) % 2 != 0)
+                    liNumVerticesGrauImpar++;
+
+                if (liNumVerticesGrauImpar > 2)
+                {
+                    context.Response.SendResponse(JsonConvert.SerializeObject(false));
+                    return context;
+                }
+                    
+            }
+
+            context.Response.SendResponse(JsonConvert.SerializeObject(true));
+            return context;
+        }
+
+        /// <summary>
         /// Cria um novo grafo no servidor.
         /// Lê o grafo do arquivo se o parâmetro "file" (endereço do arquivo local) for enviado no corpo da solicitação.
         /// </summary>

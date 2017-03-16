@@ -192,7 +192,7 @@ namespace TeoriaDosGrafos.API
         /// <returns></returns>
         public static int GetGrauVertice(int aiID)
         {
-            return FindVerticesAdjacentesByID(aiID).Count;
+            return GetArestasOfVertice(aiID).Count;
         }
 
         #endregion
