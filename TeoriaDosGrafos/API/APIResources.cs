@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using TeoriaDosGrafos.Classes;
 using System.Linq;
 using System.Text;
+using System.IO;
 
 namespace TeoriaDosGrafos.API
 {
@@ -140,7 +141,8 @@ namespace TeoriaDosGrafos.API
 
             if (loArgs.ContainsKey("arquivo"))
             {
-
+                string lsJSON = File.ReadAllText(loArgs["arquivo"]);
+                Servidor.Grafo = JsonConvert.DeserializeObject<Grafo>(lsJSON);
             }
             else
             {
