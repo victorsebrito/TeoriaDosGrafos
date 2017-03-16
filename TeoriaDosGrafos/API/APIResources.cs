@@ -223,6 +223,29 @@ namespace TeoriaDosGrafos.API
         /// <summary>
         /// Retorna a lista de vértices adjacentes ao vértice passado por parâmetro.
         /// </summary>
+        [RestRoute(HttpMethod = HttpMethod.POST, PathInfo = "api/vertice/arestas")]
+        public IHttpContext GetArestasOfVertice(IHttpContext context)
+        {
+            Dictionary<string, string> loArgs = APIUtil.GetDictionaryFromContext(context);
+
+            Vertice loVertice = APIUtil.FindVerticeByArgs(loArgs, context);
+
+            if (loVertice != null)
+            {
+                List<Aresta> loListaArestas = APIUtil.GetArestasOfVertice(loVertice.ID);
+
+                context.Response.ContentType = ContentType.JSON;
+                context.Response.SendResponse(JsonConvert.SerializeObject(loListaArestas));
+            }
+            else
+                context.Response.SendResponse(HttpStatusCode.NotFound);
+
+            return context;
+        }
+
+        /// <summary>
+        /// Retorna a lista de vértices adjacentes ao vértice passado por parâmetro.
+        /// </summary>
         [RestRoute(HttpMethod = HttpMethod.POST, PathInfo = "api/vertice/adjacentes")]
         public IHttpContext ListarVerticesAdjacentes(IHttpContext context)
         {
