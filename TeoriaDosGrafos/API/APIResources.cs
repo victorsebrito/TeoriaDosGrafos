@@ -82,7 +82,6 @@ namespace TeoriaDosGrafos.API
         [RestRoute(HttpMethod = HttpMethod.GET, PathInfo = "api/grafo/conexo")]
         public IHttpContext GetIsGrafoConexo(IHttpContext context)
         {
-
             context.Response.ContentType = ContentType.JSON;
 
             foreach (Vertice loVertice in Servidor.Grafo.Vertices)
