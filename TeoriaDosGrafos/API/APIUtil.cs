@@ -101,11 +101,9 @@ namespace TeoriaDosGrafos.API
                 {
                     if (!aoListaVerticesVisitados.Contains(loVertice.ID))
                     {
-                        bool lbExisteCaminho = ExisteCaminhoEntreVertices(loVertice.ID, aiVertice2, aoListaVerticesVisitados);
-                        if (lbExisteCaminho)
+                        if (ExisteCaminhoEntreVertices(loVertice.ID, aiVertice2, aoListaVerticesVisitados))
                             return true;
-                    }
-                        
+                    }   
                 }
 
             }
