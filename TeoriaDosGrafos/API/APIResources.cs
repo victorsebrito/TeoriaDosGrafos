@@ -29,7 +29,71 @@ namespace TeoriaDosGrafos.API
 
             return context;
         }
-        
+
+        /// <summary>
+        /// Retorna a matriz de adjacência.
+        /// </summary>
+        [RestRoute(HttpMethod = HttpMethod.GET, PathInfo = "api/grafo/matriz")]
+        public IHttpContext GetMatrizAdjacencia(IHttpContext context)
+        {
+            //int[,] loMatriz = new int[Servidor.Grafo.Vertices.Count, Servidor.Grafo.Vertices.Count];
+
+            //int i, j;
+            //i = 0;
+
+            //foreach(Vertice loVertice in Servidor.Grafo.Vertices)
+            //{
+            //    j = 0;
+
+            //    foreach(Vertice loVertice2 in Servidor.Grafo.Vertices)
+            //    {
+            //        if (APIUtil.FindArestasByVerticesIDs(loVertice.ID, loVertice2.ID).Count > 0)
+            //            loMatriz[i, j] = 1;
+            //        else
+            //            loMatriz[i, j] = 0;
+
+            //        j++;
+            //    }
+            //    i++;
+            //}
+
+            StringBuilder loBuilder = new StringBuilder();
+            loBuilder.Append("<!DOCTYPE html><html><body style=\"font-size: 1.5em; text-align: center;\"><table border=\"1\">");
+
+            loBuilder.Append("<tr><th></th>");
+            foreach (Vertice loVertice in Servidor.Grafo.Vertices)
+                loBuilder.Append(String.Format("<th>{0} ({1})</th>", loVertice.ID, loVertice.Nome));
+            loBuilder.Append("</tr>");
+
+            int i, j;
+            i = 0;
+            foreach (Vertice loVertice in Servidor.Grafo.Vertices)
+            {
+                j = 0;
+
+                loBuilder.Append("<tr>");
+                loBuilder.Append(String.Format("<th>{0} ({1})</th>", loVertice.ID, loVertice.Nome));
+
+                foreach (Vertice loVertice2 in Servidor.Grafo.Vertices)
+                {
+                    loBuilder.Append("<td>");
+                    loBuilder.Append((APIUtil.FindArestasByVerticesIDs(loVertice.ID, loVertice2.ID).Count > 0) ? 1 : 0);
+                    loBuilder.Append("</td>");
+                    j++;
+                }
+                i++;
+
+                loBuilder.Append("</tr>");
+            }
+
+            loBuilder.Append("</table></body></html>");
+
+            context.Response.ContentType = ContentType.HTML;
+            context.Response.ContentEncoding = Encoding.UTF8;
+            context.Response.SendResponse(loBuilder.ToString());
+
+            return context;
+        }
 
         /// <summary>
         /// Retorna o grau mínimo, médio e máximo do grafo.
