@@ -19,9 +19,29 @@ namespace TeoriaDosGrafos.API
         /// <summary>
         /// Verificar se o grafo da aplicação já foi instanciado.
         /// </summary>
-        public static bool ValidarGrafo()
+        public static Cliente ValidarCliente(IHttpContext aoContext)
         {
-            return (Servidor.Grafo != null);
+            Cliente loCliente = GetCliente(aoContext);
+
+            if (loCliente == null)
+                aoContext.Response.SendResponse(HttpStatusCode.Unauthorized);
+
+            return loCliente;
+        }
+
+        public static Cliente NovoCliente()
+        {
+            Cliente loCliente = new Cliente();
+            Servidor.Clientes.Add(loCliente);
+            return loCliente;
+        }
+
+        public static Cliente GetCliente(IHttpContext aoContext)
+        {
+            if (aoContext.Request.Headers["X-Grafo-ID"] != null)
+                return Servidor.Clientes.Find(c => c.ID == aoContext.Request.Headers["X-Grafo-ID"]);
+            else
+                return null;
         }
 
         #endregion
@@ -60,18 +80,19 @@ namespace TeoriaDosGrafos.API
         /// <returns></returns>
         public static Vertice FindVerticeByArgs(Dictionary<string, string> aoArgs, IHttpContext context)
         {
+            Grafo loGrafo = GetCliente(context).Grafo;
             Vertice loVertice = null;
 
             if (aoArgs.ContainsKey("id"))
             {
 				int liID;
                 if(Int32.TryParse(aoArgs["id"], out liID))                
-                    loVertice = FindVerticeByID(liID);
+                    loVertice = FindVerticeByID(liID, loGrafo);
                 else
                     context.Response.SendResponse(HttpStatusCode.BadRequest);
             }
             else if (aoArgs.ContainsKey("nome"))
-                loVertice = FindVerticeByNome(aoArgs["nome"]);
+                loVertice = FindVerticeByNome(aoArgs["nome"], loGrafo);
 
             return loVertice;
 
@@ -84,14 +105,14 @@ namespace TeoriaDosGrafos.API
         /// <param name="aiVertice2"></param>
         /// <param name="aoListaVerticesVisitados"></param>
         /// <returns></returns>
-        public static bool ExisteCaminhoEntreVertices(int aiVertice1, int aiVertice2, List<int> aoListaVerticesVisitados)
+        public static bool ExisteCaminhoEntreVertices(int aiVertice1, int aiVertice2, Grafo aoGrafo, List<int> aoListaVerticesVisitados)
         {
 
             if (aoListaVerticesVisitados == null)
                 aoListaVerticesVisitados = new List<int>();
             aoListaVerticesVisitados.Add(aiVertice1);
 
-            List<Vertice> loListaVerticesAdjacentes = FindVerticesAdjacentesByID(aiVertice1);
+            List<Vertice> loListaVerticesAdjacentes = FindVerticesAdjacentesByID(aiVertice1, aoGrafo);
 
             foreach(Vertice loVertice in loListaVerticesAdjacentes)
             {
@@ -101,7 +122,7 @@ namespace TeoriaDosGrafos.API
                 {
                     if (!aoListaVerticesVisitados.Contains(loVertice.ID))
                     {
-                        if (ExisteCaminhoEntreVertices(loVertice.ID, aiVertice2, aoListaVerticesVisitados))
+                        if (ExisteCaminhoEntreVertices(loVertice.ID, aiVertice2, aoGrafo, aoListaVerticesVisitados))
                             return true;
                     }   
                 }
@@ -117,9 +138,9 @@ namespace TeoriaDosGrafos.API
         /// <param name="aiVertice1"></param>
         /// <param name="aiVertice2"></param>
         /// <returns></returns>
-        public static bool ExisteCaminhoEntreVertices(int aiVertice1, int aiVertice2)
+        public static bool ExisteCaminhoEntreVertices(int aiVertice1, int aiVertice2, Grafo aoGrafo)
         {
-            return ExisteCaminhoEntreVertices(aiVertice1, aiVertice2, null);
+            return ExisteCaminhoEntreVertices(aiVertice1, aiVertice2, aoGrafo, null);
         }
 
         /// <summary>
@@ -127,9 +148,9 @@ namespace TeoriaDosGrafos.API
         /// </summary>
         /// <param name="aiID"></param>
         /// <returns></returns>
-        public static List<Vertice> FindVerticesAdjacentesByID(int aiID)
+        public static List<Vertice> FindVerticesAdjacentesByID(int aiID, Grafo aoGrafo)
         {
-            List<Aresta> loListArestas = GetArestasOfVertice(aiID);
+            List<Aresta> loListArestas = GetArestasOfVertice(aiID, aoGrafo);
             List<Vertice> loListVertices = new List<Vertice>();
             Vertice loVerticeAux;
 
@@ -137,12 +158,12 @@ namespace TeoriaDosGrafos.API
             {
                 if (loAresta.Origem == aiID)
                 {
-                    loVerticeAux = FindVerticeByID(loAresta.Destino);
+                    loVerticeAux = FindVerticeByID(loAresta.Destino, aoGrafo);
                     if (!loListVertices.Contains(loVerticeAux)) loListVertices.Add(loVerticeAux);
                 }
                 else
                 {
-                    loVerticeAux = FindVerticeByID(loAresta.Origem);
+                    loVerticeAux = FindVerticeByID(loAresta.Origem, aoGrafo);
                     if (!loListVertices.Contains(loVerticeAux)) loListVertices.Add(loVerticeAux);
                 }
             }
@@ -155,9 +176,9 @@ namespace TeoriaDosGrafos.API
         /// </summary>
         /// <param name="aiID"></param>
         /// <returns></returns>
-        public static Vertice FindVerticeByID(int aiID)
+        public static Vertice FindVerticeByID(int aiID, Grafo aoGrafo)
         {
-            return Servidor.Grafo.Vertices.Find(v => v.ID == aiID);
+            return aoGrafo.Vertices.Find(v => v.ID == aiID);
         }
 
         /// <summary>
@@ -165,32 +186,32 @@ namespace TeoriaDosGrafos.API
         /// </summary>
         /// <param name="asNome"></param>
         /// <returns></returns>
-        public static Vertice FindVerticeByNome(string asNome)
+        public static Vertice FindVerticeByNome(string asNome, Grafo aoGrafo)
         {
-            return Servidor.Grafo.Vertices.Find(v => v.Nome.Equals(asNome));
+            return aoGrafo.Vertices.Find(v => v.Nome.Equals(asNome));
         }
 
         /// <summary>
         /// Remove um vértice do grafo.
         /// </summary>
         /// <param name="aoVertice"></param>
-        public static void RemoverVertice(Vertice aoVertice)
+        public static void RemoverVertice(Vertice aoVertice, Grafo aoGrafo)
         {
-            List<Aresta> loListArestas = APIUtil.GetArestasOfVertice(aoVertice.ID);
+            List<Aresta> loListArestas = APIUtil.GetArestasOfVertice(aoVertice.ID, aoGrafo);
 
             foreach (Aresta loAresta in loListArestas)
-                Servidor.Grafo.Arestas.Remove(loAresta);
+                aoGrafo.Arestas.Remove(loAresta);
 
-            Servidor.Grafo.Vertices.Remove(aoVertice);
+            aoGrafo.Vertices.Remove(aoVertice);
         }
         /// <summary>
         /// Retorna o grau de um determinado vértice passado por parâmetro.
         /// </summary>
         /// <param name="aiID"></param>
         /// <returns></returns>
-        public static int GetGrauVertice(int aiID)
+        public static int GetGrauVertice(int aiID, Grafo aoGrafo)
         {
-            return GetArestasOfVertice(aiID).Count;
+            return GetArestasOfVertice(aiID, aoGrafo).Count;
         }
 
         #endregion
@@ -210,9 +231,9 @@ namespace TeoriaDosGrafos.API
         /// </summary>
         /// <param name="aoVertice"></param>
         /// <returns></returns>
-        public static List<Aresta> GetArestasOfVertice(int aiID)
+        public static List<Aresta> GetArestasOfVertice(int aiID, Grafo aoGrafo)
         {
-            return Servidor.Grafo.Arestas.FindAll(a => a.Origem == aiID || a.Destino == aiID);
+            return aoGrafo.Arestas.FindAll(a => a.Origem == aiID || a.Destino == aiID);
         }
 
         /// <summary>
@@ -221,9 +242,9 @@ namespace TeoriaDosGrafos.API
         /// <param name="aiIDVertice1"></param>
         /// <param name="aiIDVertice2"></param>
         /// <returns></returns>
-        public static List<Aresta> FindArestasByVerticesIDs(int aiIDVertice1, int aiIDVertice2)
+        public static List<Aresta> FindArestasByVerticesIDs(int aiIDVertice1, int aiIDVertice2, Grafo aoGrafo)
         {
-            return Servidor.Grafo.Arestas.FindAll(a => (a.Origem == aiIDVertice1 && a.Destino == aiIDVertice2) ||
+            return aoGrafo.Arestas.FindAll(a => (a.Origem == aiIDVertice1 && a.Destino == aiIDVertice2) ||
                                                        (a.Origem == aiIDVertice2 && a.Destino == aiIDVertice1));
         }
 
@@ -231,13 +252,13 @@ namespace TeoriaDosGrafos.API
         /// Valida uma lista de arestas, retornando uma lista apenas com as válidas.
         /// </summary>
         /// <param name="aoListaArestas"></param>
-        public static List<Aresta> ValidaListaArestas(List<Aresta> aoListaArestas)
+        public static List<Aresta> ValidaListaArestas(List<Aresta> aoListaArestas, Grafo aoGrafo)
         {
             List<Aresta> loListaArestas = new List<Aresta>();
 
             foreach(Aresta loAresta in aoListaArestas)
             {
-                if (loAresta.IsArestaValida())
+                if (loAresta.IsArestaValida(aoGrafo))
                     loListaArestas.Add(loAresta);
             }
 

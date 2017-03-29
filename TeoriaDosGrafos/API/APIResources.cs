@@ -24,8 +24,11 @@ namespace TeoriaDosGrafos.API
         [RestRoute(HttpMethod = HttpMethod.GET, PathInfo = "api/grafo")]
         public IHttpContext GetGrafo(IHttpContext context)
         {
+            Cliente loCliente = APIUtil.ValidarCliente(context);
+            if (context.WasRespondedTo) return context;
+
             context.Response.ContentType = ContentType.JSON;
-            context.Response.SendResponse(JsonConvert.SerializeObject(Servidor.Grafo));
+            context.Response.SendResponse(JsonConvert.SerializeObject(loCliente.Grafo));
 
             return context;
         }
@@ -57,27 +60,30 @@ namespace TeoriaDosGrafos.API
             //    i++;
             //}
 
+            Cliente loCliente = APIUtil.ValidarCliente(context);
+            if (context.WasRespondedTo) return context;
+
             StringBuilder loBuilder = new StringBuilder();
             loBuilder.Append("<!DOCTYPE html><html><body style=\"font-size: 1.5em; text-align: center;\"><table border=\"1\">");
 
             loBuilder.Append("<tr><th></th>");
-            foreach (Vertice loVertice in Servidor.Grafo.Vertices)
+            foreach (Vertice loVertice in loCliente.Grafo.Vertices)
                 loBuilder.Append(String.Format("<th>{0} ({1})</th>", loVertice.ID, loVertice.Nome));
             loBuilder.Append("</tr>");
 
             int i, j;
             i = 0;
-            foreach (Vertice loVertice in Servidor.Grafo.Vertices)
+            foreach (Vertice loVertice in loCliente.Grafo.Vertices)
             {
                 j = 0;
 
                 loBuilder.Append("<tr>");
                 loBuilder.Append(String.Format("<th>{0} ({1})</th>", loVertice.ID, loVertice.Nome));
 
-                foreach (Vertice loVertice2 in Servidor.Grafo.Vertices)
+                foreach (Vertice loVertice2 in loCliente.Grafo.Vertices)
                 {
                     loBuilder.Append("<td>");
-                    loBuilder.Append((APIUtil.FindArestasByVerticesIDs(loVertice.ID, loVertice2.ID).Count > 0) ? 1 : 0);
+                    loBuilder.Append((APIUtil.FindArestasByVerticesIDs(loVertice.ID, loVertice2.ID, loCliente.Grafo).Count > 0) ? 1 : 0);
                     loBuilder.Append("</td>");
                     j++;
                 }
@@ -101,14 +107,17 @@ namespace TeoriaDosGrafos.API
         [RestRoute(HttpMethod = HttpMethod.GET, PathInfo = "api/grafo/grau")]
         public IHttpContext GetGrauGrafo(IHttpContext context)
         {
+            Cliente loCliente = APIUtil.ValidarCliente(context);
+            if (context.WasRespondedTo) return context;
+
             APIUtil.Grau[] loListGrau = { new APIUtil.Grau(APIUtil.Grau.TiposGrau.Mínimo),
                                           new APIUtil.Grau(APIUtil.Grau.TiposGrau.Médio),
                                           new APIUtil.Grau(APIUtil.Grau.TiposGrau.Máximo) };
             int liSomaGraus = 0;
 
-            foreach(Vertice loVertice in Servidor.Grafo.Vertices)
+            foreach(Vertice loVertice in loCliente.Grafo.Vertices)
             {                
-                int liGrau = APIUtil.GetGrauVertice(loVertice.ID);
+                int liGrau = APIUtil.GetGrauVertice(loVertice.ID, loCliente.Grafo);
                 liSomaGraus += liGrau;
 
                 if(loListGrau[0].Vertice == null)
@@ -132,7 +141,7 @@ namespace TeoriaDosGrafos.API
                 }
             }
 
-            loListGrau[1].NumGrau = liSomaGraus / Servidor.Grafo.Vertices.Count;
+            loListGrau[1].NumGrau = liSomaGraus / loCliente.Grafo.Vertices.Count;
 
             context.Response.ContentType = ContentType.JSON;
             context.Response.ContentEncoding = Encoding.UTF8;
@@ -147,15 +156,18 @@ namespace TeoriaDosGrafos.API
         [RestRoute(HttpMethod = HttpMethod.GET, PathInfo = "api/grafo/conexo")]
         public IHttpContext GetIsGrafoConexo(IHttpContext context)
         {
+            Cliente loCliente = APIUtil.ValidarCliente(context);
+            if (context.WasRespondedTo) return context;
+
             context.Response.ContentType = ContentType.JSON;
 
-            foreach (Vertice loVertice in Servidor.Grafo.Vertices)
+            foreach (Vertice loVertice in loCliente.Grafo.Vertices)
             {
-                List<Vertice> loListaOutrosVertices = Servidor.Grafo.Vertices.Except(new List<Vertice>() { loVertice }).ToList();
+                List<Vertice> loListaOutrosVertices = loCliente.Grafo.Vertices.Except(new List<Vertice>() { loVertice }).ToList();
 
                 foreach (Vertice loVertice2 in loListaOutrosVertices)
                 {
-                    if (!APIUtil.ExisteCaminhoEntreVertices(loVertice.ID, loVertice2.ID))
+                    if (!APIUtil.ExisteCaminhoEntreVertices(loVertice.ID, loVertice2.ID, loCliente.Grafo))
                     {
                         context.Response.SendResponse(JsonConvert.SerializeObject(false));
                         return context;
@@ -173,13 +185,16 @@ namespace TeoriaDosGrafos.API
         [RestRoute(HttpMethod = HttpMethod.GET, PathInfo = "api/grafo/euler")]
         public IHttpContext GetPossuiCaminhoEuler(IHttpContext context)
         {
+            Cliente loCliente = APIUtil.ValidarCliente(context);
+            if (context.WasRespondedTo) return context;
+
             context.Response.ContentType = ContentType.JSON;
 
             int liNumVerticesGrauImpar = 0;
 
-            foreach (Vertice loVertice in Servidor.Grafo.Vertices)
+            foreach (Vertice loVertice in loCliente.Grafo.Vertices)
             {
-                if (APIUtil.GetGrauVertice(loVertice.ID) % 2 != 0)
+                if (APIUtil.GetGrauVertice(loVertice.ID, loCliente.Grafo) % 2 != 0)
                     liNumVerticesGrauImpar++;
 
                 if (liNumVerticesGrauImpar > 2)
@@ -202,30 +217,32 @@ namespace TeoriaDosGrafos.API
         public IHttpContext NovoGrafo(IHttpContext context)
         {
             Dictionary<string, string> loArgs = APIUtil.GetDictionaryFromContext(context);
+            Cliente loCliente = APIUtil.NovoCliente();
 
             if (loArgs.ContainsKey("arquivo"))
             {
                 string lsJSON = File.ReadAllText(loArgs["arquivo"]);
-                Servidor.Grafo = JsonConvert.DeserializeObject<Grafo>(lsJSON);
+                loCliente.Grafo = JsonConvert.DeserializeObject<Grafo>(lsJSON);
             }
             else
             {
-                Servidor.Grafo = new Grafo();
+                loCliente.Grafo = new Grafo();
 
                 if (loArgs.ContainsKey("vertice"))
                 {
-                    Servidor.Grafo.Vertices = APIUtil.GetListaVerticesByArgs(loArgs["vertice"]);
+                    loCliente.Grafo.Vertices = APIUtil.GetListaVerticesByArgs(loArgs["vertice"]);
 
                     if (loArgs.ContainsKey("aresta"))
                     {
                         List<Aresta> loListaArestas = new List<Aresta>();
                         loListaArestas = APIUtil.GetListaArestasFromArgs(loArgs["aresta"]);
-                        loListaArestas = APIUtil.ValidaListaArestas(loListaArestas);
+                        loListaArestas = APIUtil.ValidaListaArestas(loListaArestas, loCliente.Grafo);
 
-                        Servidor.Grafo.Arestas = loListaArestas;
+                        loCliente.Grafo.Arestas = loListaArestas;
                     }
                 }
             }
+            context.Response.AddHeader("X-Grafo-ID", loCliente.ID);
             context.Response.SendResponse("");
             return context;
         }
@@ -242,6 +259,9 @@ namespace TeoriaDosGrafos.API
         [RestRoute(HttpMethod = HttpMethod.POST, PathInfo = "api/vertice")]
         public IHttpContext NovoVertice(IHttpContext context)
         {
+            Cliente loCliente = APIUtil.ValidarCliente(context);
+            if (context.WasRespondedTo) return context;
+
             Dictionary<string, string> loArgs = APIUtil.GetDictionaryFromContext(context);
 
             Vertice loVertice = APIUtil.FindVerticeByArgs(loArgs, context);
@@ -253,7 +273,7 @@ namespace TeoriaDosGrafos.API
                 int liID = Convert.ToInt32(loArgs["id"]);
                 string lsNome = (loArgs.ContainsKey("nome")) ? loArgs["nome"] : "";
 
-                Servidor.Grafo.Vertices.Add(new Vertice(liID, lsNome));
+                loCliente.Grafo.Vertices.Add(new Vertice(liID, lsNome));
 
                 context.Response.SendResponse(HttpStatusCode.Ok);
             }
@@ -271,13 +291,16 @@ namespace TeoriaDosGrafos.API
         [RestRoute(HttpMethod = HttpMethod.DELETE, PathInfo = "api/vertice")]
         public IHttpContext ApagarVertice(IHttpContext context)
         {
+            Cliente loCliente = APIUtil.ValidarCliente(context);
+            if (context.WasRespondedTo) return context;
+
             Dictionary<string, string> loArgs = APIUtil.GetDictionaryFromContext(context);
 
             Vertice loVertice = APIUtil.FindVerticeByArgs(loArgs, context);
 
             if (loVertice != null)
             {
-                APIUtil.RemoverVertice(loVertice);
+                APIUtil.RemoverVertice(loVertice, loCliente.Grafo);
                 context.Response.SendResponse(HttpStatusCode.Ok);
             }
             else
@@ -292,13 +315,16 @@ namespace TeoriaDosGrafos.API
         [RestRoute(HttpMethod = HttpMethod.POST, PathInfo = "api/vertice/arestas")]
         public IHttpContext GetArestasOfVertice(IHttpContext context)
         {
+            Cliente loCliente = APIUtil.ValidarCliente(context);
+            if (context.WasRespondedTo) return context;
+
             Dictionary<string, string> loArgs = APIUtil.GetDictionaryFromContext(context);
 
             Vertice loVertice = APIUtil.FindVerticeByArgs(loArgs, context);
 
             if (loVertice != null)
             {
-                List<Aresta> loListaArestas = APIUtil.GetArestasOfVertice(loVertice.ID);
+                List<Aresta> loListaArestas = APIUtil.GetArestasOfVertice(loVertice.ID, loCliente.Grafo);
 
                 context.Response.ContentType = ContentType.JSON;
                 context.Response.SendResponse(JsonConvert.SerializeObject(loListaArestas));
@@ -315,13 +341,16 @@ namespace TeoriaDosGrafos.API
         [RestRoute(HttpMethod = HttpMethod.POST, PathInfo = "api/vertice/adjacentes")]
         public IHttpContext ListarVerticesAdjacentes(IHttpContext context)
         {
+            Cliente loCliente = APIUtil.ValidarCliente(context);
+            if (context.WasRespondedTo) return context;
+
             Dictionary<string, string> loArgs = APIUtil.GetDictionaryFromContext(context);
 
             Vertice loVertice = APIUtil.FindVerticeByArgs(loArgs, context);
 
             if (loVertice != null)
             {
-                List<Vertice> loListaVertices = APIUtil.FindVerticesAdjacentesByID(loVertice.ID).OrderBy(v => v.ID).ToList();
+                List<Vertice> loListaVertices = APIUtil.FindVerticesAdjacentesByID(loVertice.ID, loCliente.Grafo).OrderBy(v => v.ID).ToList();
 
                 context.Response.ContentType = ContentType.JSON;
                 context.Response.SendResponse(JsonConvert.SerializeObject(loListaVertices));
@@ -338,12 +367,15 @@ namespace TeoriaDosGrafos.API
         [RestRoute(HttpMethod = HttpMethod.POST, PathInfo = "api/vertice/grau")]
         public IHttpContext GetGrauVertice(IHttpContext context)
         {
+            Cliente loCliente = APIUtil.ValidarCliente(context);
+            if (context.WasRespondedTo) return context;
+
             Dictionary<string, string> loArgs = APIUtil.GetDictionaryFromContext(context);
 
             Vertice loVertice = APIUtil.FindVerticeByArgs(loArgs, context);
 
             if (loVertice != null)             
-                context.Response.SendResponse(APIUtil.GetGrauVertice(loVertice.ID).ToString());            
+                context.Response.SendResponse(APIUtil.GetGrauVertice(loVertice.ID, loCliente.Grafo).ToString());            
             else
                 context.Response.SendResponse(HttpStatusCode.NotFound);
 
@@ -360,6 +392,9 @@ namespace TeoriaDosGrafos.API
         [RestRoute(HttpMethod = HttpMethod.POST, PathInfo = "api/aresta/lista")]
         public IHttpContext ListaArestas(IHttpContext context)
         {
+            Cliente loCliente = APIUtil.ValidarCliente(context);
+            if (context.WasRespondedTo) return context;
+
             Dictionary<string, string> loArgs = APIUtil.GetDictionaryFromContext(context);
 
             if (loArgs.ContainsKey("vertice1") && loArgs.ContainsKey("vertice2"))
@@ -369,9 +404,9 @@ namespace TeoriaDosGrafos.API
                     int liVertice1 = Convert.ToInt32(loArgs["vertice1"]);
                     int liVertice2 = Convert.ToInt32(loArgs["vertice2"]);
 
-                    if (APIUtil.FindVerticeByID(liVertice1) != null && APIUtil.FindVerticeByID(liVertice2) != null)
+                    if (APIUtil.FindVerticeByID(liVertice1, loCliente.Grafo) != null && APIUtil.FindVerticeByID(liVertice2, loCliente.Grafo) != null)
                     {
-                        List<Aresta> loListaArestas = APIUtil.FindArestasByVerticesIDs(liVertice1, liVertice2);
+                        List<Aresta> loListaArestas = APIUtil.FindArestasByVerticesIDs(liVertice1, liVertice2, loCliente.Grafo);
 
                         context.Response.ContentType = ContentType.JSON;
                         context.Response.SendResponse(JsonConvert.SerializeObject(loListaArestas));
@@ -394,6 +429,9 @@ namespace TeoriaDosGrafos.API
         [RestRoute(HttpMethod = HttpMethod.POST, PathInfo = "api/aresta")]
         public IHttpContext NovaAresta(IHttpContext context)
         {
+            Cliente loCliente = APIUtil.ValidarCliente(context);
+            if (context.WasRespondedTo) return context;
+
             Dictionary<string, string> loArgs = APIUtil.GetDictionaryFromContext(context);
 
             if (loArgs.ContainsKey("origem") && loArgs.ContainsKey("destino") && loArgs.ContainsKey("peso"))
@@ -404,9 +442,9 @@ namespace TeoriaDosGrafos.API
                     int liDestino = Convert.ToInt32(loArgs["destino"]);
                     int liPeso = Convert.ToInt32(loArgs["peso"]);
                     
-                    if (APIUtil.FindVerticeByID(liOrigem) != null && APIUtil.FindVerticeByID(liDestino) != null)
+                    if (APIUtil.FindVerticeByID(liOrigem, loCliente.Grafo) != null && APIUtil.FindVerticeByID(liDestino, loCliente.Grafo) != null)
                     {
-                        Servidor.Grafo.Arestas.Add(new Aresta(liOrigem, liDestino, liPeso));
+                        loCliente.Grafo.Arestas.Add(new Aresta(liOrigem, liDestino, liPeso));
                         context.Response.SendResponse(HttpStatusCode.Ok);
                     }
                     else                    
@@ -429,6 +467,9 @@ namespace TeoriaDosGrafos.API
         [RestRoute(HttpMethod = HttpMethod.DELETE, PathInfo = "api/aresta")]
         public IHttpContext DeletaAresta(IHttpContext context)
         {
+            Cliente loCliente = APIUtil.ValidarCliente(context);
+            if (context.WasRespondedTo) return context;
+
             Dictionary<string, string> loArgs = APIUtil.GetDictionaryFromContext(context);
 
             if (loArgs.ContainsKey("vertice1") && loArgs.ContainsKey("vertice2"))
@@ -438,10 +479,10 @@ namespace TeoriaDosGrafos.API
                     int liVertice1 = Convert.ToInt32(loArgs["vertice1"]);
                     int liVertice2 = Convert.ToInt32(loArgs["vertice2"]);
                     
-                    if (APIUtil.FindVerticeByID(liVertice1) != null && APIUtil.FindVerticeByID(liVertice2) != null)
+                    if (APIUtil.FindVerticeByID(liVertice1, loCliente.Grafo) != null && APIUtil.FindVerticeByID(liVertice2, loCliente.Grafo) != null)
                     {
-                        List<Aresta> loListaArestas = APIUtil.FindArestasByVerticesIDs(liVertice1, liVertice2);
-                        Servidor.Grafo.Arestas = Servidor.Grafo.Arestas.Except(loListaArestas).ToList();
+                        List<Aresta> loListaArestas = APIUtil.FindArestasByVerticesIDs(liVertice1, liVertice2, loCliente.Grafo);
+                        loCliente.Grafo.Arestas = loCliente.Grafo.Arestas.Except(loListaArestas).ToList();
                         context.Response.SendResponse(HttpStatusCode.Ok);
                     }
                     else

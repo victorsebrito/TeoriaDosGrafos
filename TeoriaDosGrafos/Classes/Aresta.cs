@@ -21,9 +21,9 @@ namespace TeoriaDosGrafos.Classes
         /// Valida a aresta, verificando se a origem e o destino existem.
         /// </summary>
         /// <returns></returns>
-        public bool IsArestaValida()
+        public bool IsArestaValida(Grafo aoGrafo)
         {
-            return (APIUtil.FindVerticeByID(Origem) != null && APIUtil.FindVerticeByID(Destino) != null);
+            return (APIUtil.FindVerticeByID(Origem, aoGrafo) != null && APIUtil.FindVerticeByID(Destino, aoGrafo) != null);
         }
     }
 }
