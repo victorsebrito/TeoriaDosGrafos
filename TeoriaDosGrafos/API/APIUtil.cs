@@ -17,8 +17,10 @@ namespace TeoriaDosGrafos.API
         #region Grafos
 
         /// <summary>
-        /// Verificar se o grafo da aplicação já foi instanciado.
+        /// Verificar se o ID de autenticação é valido.
         /// </summary>
+        /// <param name="aoContext"></param>
+        /// <returns></returns>
         public static Cliente ValidarCliente(IHttpContext aoContext)
         {
             Cliente loCliente = GetCliente(aoContext);
@@ -29,6 +31,10 @@ namespace TeoriaDosGrafos.API
             return loCliente;
         }
 
+        /// <summary>
+        /// Criar nova sessão.
+        /// </summary>
+        /// <returns></returns>
         public static Cliente NovoCliente()
         {
             Cliente loCliente = new Cliente();
@@ -36,6 +42,11 @@ namespace TeoriaDosGrafos.API
             return loCliente;
         }
 
+        /// <summary>
+        /// Carregar sessão.
+        /// </summary>
+        /// <param name="aoContext"></param>
+        /// <returns></returns>
         public static Cliente GetCliente(IHttpContext aoContext)
         {
             if (aoContext.Request.Headers["X-Grafo-ID"] != null)
@@ -45,7 +56,7 @@ namespace TeoriaDosGrafos.API
         }
 
         #endregion
-
+        
         #region Vertices
 
         public class Grau
@@ -66,6 +77,8 @@ namespace TeoriaDosGrafos.API
         /// <summary>
         /// Converte uma string com uma lista de vértices em um objeto List<Vertices>.
         /// </summary>
+        /// <param name="asVertices"></param>
+        /// <returns></returns>
         public static List<Vertice> GetListaVerticesByArgs(string asVertices)
         {
             string lsVertices = '[' + asVertices + ']';
@@ -103,6 +116,7 @@ namespace TeoriaDosGrafos.API
         /// </summary>
         /// <param name="aiVertice1"></param>
         /// <param name="aiVertice2"></param>
+        /// <param name="aoGrafo"></param>
         /// <param name="aoListaVerticesVisitados"></param>
         /// <returns></returns>
         public static bool ExisteCaminhoEntreVertices(int aiVertice1, int aiVertice2, Grafo aoGrafo, List<int> aoListaVerticesVisitados)
@@ -137,6 +151,7 @@ namespace TeoriaDosGrafos.API
         /// </summary>
         /// <param name="aiVertice1"></param>
         /// <param name="aiVertice2"></param>
+        /// <param name="aoGrafo"></param>
         /// <returns></returns>
         public static bool ExisteCaminhoEntreVertices(int aiVertice1, int aiVertice2, Grafo aoGrafo)
         {
@@ -147,6 +162,7 @@ namespace TeoriaDosGrafos.API
         /// Retorna a lista de vértices adjacentes ao vértice passado por parâmetro.
         /// </summary>
         /// <param name="aiID"></param>
+        /// <param name="aoGrafo"></param>
         /// <returns></returns>
         public static List<Vertice> FindVerticesAdjacentesByID(int aiID, Grafo aoGrafo)
         {
@@ -175,6 +191,7 @@ namespace TeoriaDosGrafos.API
         /// Procura um vértice no grafo a partir do seu ID.
         /// </summary>
         /// <param name="aiID"></param>
+        /// <param name="aoGrafo"></param>
         /// <returns></returns>
         public static Vertice FindVerticeByID(int aiID, Grafo aoGrafo)
         {
@@ -185,6 +202,7 @@ namespace TeoriaDosGrafos.API
         /// Procura um vértice no grafo a partir do seu nome.
         /// </summary>
         /// <param name="asNome"></param>
+        /// <param name="aoGrafo"></param>
         /// <returns></returns>
         public static Vertice FindVerticeByNome(string asNome, Grafo aoGrafo)
         {
@@ -195,6 +213,7 @@ namespace TeoriaDosGrafos.API
         /// Remove um vértice do grafo.
         /// </summary>
         /// <param name="aoVertice"></param>
+        /// <param name="aoGrafo"></param>
         public static void RemoverVertice(Vertice aoVertice, Grafo aoGrafo)
         {
             List<Aresta> loListArestas = APIUtil.GetArestasOfVertice(aoVertice.ID, aoGrafo);
@@ -204,10 +223,12 @@ namespace TeoriaDosGrafos.API
 
             aoGrafo.Vertices.Remove(aoVertice);
         }
+
         /// <summary>
         /// Retorna o grau de um determinado vértice passado por parâmetro.
         /// </summary>
         /// <param name="aiID"></param>
+        /// <param name="aoGrafo"></param>
         /// <returns></returns>
         public static int GetGrauVertice(int aiID, Grafo aoGrafo)
         {
@@ -217,9 +238,12 @@ namespace TeoriaDosGrafos.API
         #endregion
 
         #region Arestas
+
         /// <summary>
         /// Converte uma string com uma lista de arestas em um objeto List<Aresta>.
         /// </summary>
+        /// <param name="asArestas"></param>
+        /// <returns></returns>
         public static List<Aresta> GetListaArestasFromArgs(string asArestas)
         {
             string lsArestas = '[' + asArestas + ']';
@@ -229,7 +253,8 @@ namespace TeoriaDosGrafos.API
         /// <summary>
         /// Procura as arestas ligadas a um vértice.
         /// </summary>
-        /// <param name="aoVertice"></param>
+        /// <param name="aiID"></param>
+        /// <param name="aoGrafo"></param>
         /// <returns></returns>
         public static List<Aresta> GetArestasOfVertice(int aiID, Grafo aoGrafo)
         {
@@ -241,6 +266,7 @@ namespace TeoriaDosGrafos.API
         /// </summary>
         /// <param name="aiIDVertice1"></param>
         /// <param name="aiIDVertice2"></param>
+        /// <param name="aoGrafo"></param>
         /// <returns></returns>
         public static List<Aresta> FindArestasByVerticesIDs(int aiIDVertice1, int aiIDVertice2, Grafo aoGrafo)
         {
@@ -252,6 +278,8 @@ namespace TeoriaDosGrafos.API
         /// Valida uma lista de arestas, retornando uma lista apenas com as válidas.
         /// </summary>
         /// <param name="aoListaArestas"></param>
+        /// <param name="aoGrafo"></param>
+        /// <returns></returns>
         public static List<Aresta> ValidaListaArestas(List<Aresta> aoListaArestas, Grafo aoGrafo)
         {
             List<Aresta> loListaArestas = new List<Aresta>();
@@ -269,8 +297,10 @@ namespace TeoriaDosGrafos.API
 
 
         /// <summary>
-        /// Transformar uma query string ("var1=a&var2=b") em dicionário.
+        /// Transforma a query string do contexto ("var1=a&var2=b") em dicionário.
         /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         public static Dictionary<string, string> GetDictionaryFromContext(IHttpContext context)
         {
             HttpRequest loRequest = (HttpRequest)context.Request;

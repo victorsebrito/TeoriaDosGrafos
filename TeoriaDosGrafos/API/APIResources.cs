@@ -16,6 +16,25 @@ namespace TeoriaDosGrafos.API
     [RestResource]
     public sealed class APIResources
     {
+
+        [RestRoute]
+        public IHttpContext SetAccessControlHeader(IHttpContext context)
+        {
+            context.Response.AddHeader("Access-Control-Allow-Origin", "*");
+            context.Response.AddHeader("Access-Control-Allow-Methods", "POST, GET, DELETE");
+            context.Response.AddHeader("Access-Control-Allow-Headers", "X-Grafo-ID");
+            context.Response.AddHeader("Access-Control-Expose-Headers", "X-Grafo-ID");
+
+            return context;
+        }
+
+        [RestRoute(HttpMethod = HttpMethod.OPTIONS)]
+        public IHttpContext ReturnOptions(IHttpContext context)
+        {
+            context.Response.SendResponse(HttpStatusCode.Ok);
+            return context;
+        }
+
         #region Grafo (/api/grafo)
 
         /// <summary>
