@@ -74,72 +74,84 @@
             <div class="col-md-5">
                 <div class="well page" id="novoGrafo">
                     <h1>Novo Grafo</h1>
-                    <form id="form-novo-grafo" onsubmit="return novoGrafo()" method="post">
-                        <div class="row lista-vertices">
-                            <div class="col-md-12"><h4>Vértices</h4></div>
-                            <div class="item-vertice">
-                                <input type="hidden" name="tipo" value="vertice" />
-                                <div class="col-md-12">
-                                    <div class="col-sm-3">
-                                        <div class="form-group required">
-                                            <label for="id" class="control-label">ID:</label>
-                                            <input type="number" class="form-control" id="id" name="id" required>
+                    <form id="form-novo-grafo" onsubmit="return novoGrafo()" method="post" novalidate>
+                        <div class="radio">
+                            <label><input type="radio" name="leitura" value="arquivo" checked>Ler do Arquivo</label>
+                            <label><input type="radio" name="leitura" value="inserir">Inserir dados</label>
+                        </div>
+
+                        <div class="arquivo">
+                            <input type="file" name="json" id="json" required>
+                            <a href="exemplo.json" download> Clique aqui para baixar um arquivo de exemplo</a>
+                        </div>
+
+                        <div class="inserir-dados" style="display: none;">
+                            <div class="row lista-vertices">
+                                <div class="col-md-12"><h4>Vértices</h4></div>
+                                <div class="item-vertice">
+                                    <input type="hidden" name="tipo" value="vertice" />
+                                    <div class="col-md-12">
+                                        <div class="col-sm-3">
+                                            <div class="form-group required">
+                                                <label for="id" class="control-label">ID:</label>
+                                                <input type="number" class="form-control" id="id" name="id" required>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="col-sm-5">
-                                        <div class="form-group required">
-                                            <label for="nome" class="control-label">Nome:</label>
-                                            <input type="text" class="form-control" id="nome" name="nome" maxlength="25" required>
+                                        <div class="col-sm-5">
+                                            <div class="form-group required">
+                                                <label for="nome" class="control-label">Nome:</label>
+                                                <input type="text" class="form-control" id="nome" name="nome" maxlength="25" required>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="col-sm-3">
-                                        <div class="form-group">
-                                            <button type="button" title="Adicionar" class="btn btn-fab btn-pink btn-add">
-                                                <i class="material-icons">add</i>
-                                                <span class="ripple-container"></span>
-                                            </button>
-                                            <button type="button" title="Remover" class="btn btn-fab btn-pink btn-remove">
-                                                <i class="material-icons">remove</i>
-                                                <span class="ripple-container"></span>
-                                            </button>
+                                        <div class="col-sm-3">
+                                            <div class="form-group">
+                                                <button type="button" title="Adicionar" class="btn btn-fab btn-pink btn-add">
+                                                    <i class="material-icons">add</i>
+                                                    <span class="ripple-container"></span>
+                                                </button>
+                                                <button type="button" title="Remover" class="btn btn-fab btn-pink btn-remove">
+                                                    <i class="material-icons">remove</i>
+                                                    <span class="ripple-container"></span>
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="row lista-arestas">
-                            <div class="col-md-12"><h4>Arestas</h4></div>
-                            <div class="item-aresta">
-                                <input type="hidden" name="tipo" value="aresta" />
-                                <div class="col-md-12">
-                                    <div class="col-sm-3">
-                                        <div class="form-group required">
-                                            <label for="id" class="control-label">Origem:</label>
-                                            <input type="number" class="form-control" id="origem" name="origem" required>
+                            <div class="row lista-arestas">
+                                <div class="col-md-12"><h4>Arestas</h4></div>
+                                <div class="item-aresta">
+                                    <input type="hidden" name="tipo" value="aresta" />
+                                    <div class="col-md-12">
+                                        <div class="col-sm-3">
+                                            <div class="form-group required">
+                                                <label for="id" class="control-label">Origem:</label>
+                                                <input type="number" class="form-control" id="origem" name="origem" required>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="col-sm-3">
-                                        <div class="form-group required">
-                                            <label for="name" class="control-label">Destino:</label>
-                                            <input type="number" class="form-control" id="destino" name="destino" required>
+                                        <div class="col-sm-3">
+                                            <div class="form-group required">
+                                                <label for="name" class="control-label">Destino:</label>
+                                                <input type="number" class="form-control" id="destino" name="destino" required>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="col-sm-3">
-                                        <div class="form-group required">
-                                            <label for="name" class="control-label">Peso</label>
-                                            <input type="number" class="form-control" id="peso" name="peso" required>
+                                        <div class="col-sm-3">
+                                            <div class="form-group required">
+                                                <label for="name" class="control-label">Peso</label>
+                                                <input type="number" class="form-control" id="peso" name="peso" required>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="col-sm-3">
-                                        <div class="form-group">
-                                            <button type="button" title="Adicionar" class="btn btn-fab btn-pink btn-add">
-                                                <i class="material-icons">add</i>
-                                                <span class="ripple-container"></span>
-                                            </button>
-                                            <button type="button" title="Remover" class="btn btn-fab btn-pink btn-remove">
-                                                <i class="material-icons">remove</i>
-                                                <span class="ripple-container"></span>
-                                            </button>
+                                        <div class="col-sm-3">
+                                            <div class="form-group">
+                                                <button type="button" title="Adicionar" class="btn btn-fab btn-pink btn-add">
+                                                    <i class="material-icons">add</i>
+                                                    <span class="ripple-container"></span>
+                                                </button>
+                                                <button type="button" title="Remover" class="btn btn-fab btn-pink btn-remove">
+                                                    <i class="material-icons">remove</i>
+                                                    <span class="ripple-container"></span>
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

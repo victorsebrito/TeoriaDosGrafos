@@ -92,3 +92,11 @@ p {
 th {
     text-align: center;
 }
+
+.radio label {
+    color: #333;
+}
+
+.arquivo a {
+    font-size: 0.9em;
+}

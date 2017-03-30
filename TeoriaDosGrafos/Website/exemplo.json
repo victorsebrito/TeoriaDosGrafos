@@ -24,12 +24,12 @@
   "Arestas": [
     {
       "Origem": 1,
-      "Destino": 2,
+      "Destino": 4,
       "Peso": 1
     },
     {
-      "Origem": 3,
-      "Destino": 4,
+      "Origem": 2,
+      "Destino": 1,
       "Peso": 3
     },
     {

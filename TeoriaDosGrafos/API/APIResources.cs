@@ -238,7 +238,9 @@ namespace TeoriaDosGrafos.API
             Dictionary<string, string> loArgs = APIUtil.GetDictionaryFromContext(context);
             Cliente loCliente = APIUtil.NovoCliente();
 
-            if (loArgs.ContainsKey("arquivo"))
+            if (loArgs.ContainsKey("json"))
+                loCliente.Grafo = JsonConvert.DeserializeObject<Grafo>(loArgs["json"]);
+            else if (loArgs.ContainsKey("arquivo"))
             {
                 string lsJSON = File.ReadAllText(loArgs["arquivo"]);
                 loCliente.Grafo = JsonConvert.DeserializeObject<Grafo>(lsJSON);

@@ -42,34 +42,63 @@ $(document).ready(function(){
         $item.remove();
     });
 
+    $('input[type=radio][name=leitura]').change(function () {
+        if (this.value == 'arquivo') {
+            $('.inserir-dados').hide();
+            $('.arquivo').show();
+            $('.arquivo').find('input').prop('required', true);
+        }
+        else if (this.value == 'inserir') {
+            $('.arquivo').hide();
+            $('.inserir-dados').show();
+            $('.inserir-dados').find('input').prop('required', true);
+        }
+    });
+
 })
 
 var getQueryString = function (form) {
     var inputs = $(form).serializeArray();
     var queryString = '';
 
-    var i = 0;
-    while (i < inputs.length) {
-        if (i != 0)
-            queryString += '&';
-        queryString += inputs[i].value;
-        queryString += '={';
+    if (inputs[0].value == 'arquivo') {
 
-        var j = i + 1;
-        while ((j < inputs.length) && inputs[j].name != 'tipo') {
-            queryString += inputs[j].name;
-            queryString += ':\'';
-            queryString += inputs[j].value;
-            queryString += '\'';
+        queryString = false;
 
-            if ((j + 1 < inputs.length) && (inputs[j + 1].name != 'tipo'))
-                queryString += ', ';
+        var fileInput = $(form).find('#json')[0];
 
-            ++j;
+        var file = fileInput.files[0];
+        var fr = new FileReader();
+        fr.onload = function () {
+            api.grafo.post('json=' + fr.result);
+        };
+        fr.readAsText(file);
+    }
+
+    else {
+        var i = 1;
+        while (i < inputs.length) {
+            if (i != 1)
+                queryString += '&';
+            queryString += inputs[i].value;
+            queryString += '={';
+
+            var j = i + 1;
+            while ((j < inputs.length) && inputs[j].name != 'tipo') {
+                queryString += inputs[j].name;
+                queryString += ':\'';
+                queryString += inputs[j].value;
+                queryString += '\'';
+
+                if ((j + 1 < inputs.length) && (inputs[j + 1].name != 'tipo'))
+                    queryString += ', ';
+
+                ++j;
+            }
+
+            queryString += '}';
+            i = j;
         }
-
-        queryString += '}';
-        i = j;
     }
     
     return queryString;
@@ -98,7 +127,8 @@ var novoGrafo = function () {
     var form = '#novoGrafo form';
     var queryString = getQueryString(form);
 
-    api.grafo.post(queryString);
+    if (queryString != false)
+        api.grafo.post(queryString);
     return false;
 }
 
