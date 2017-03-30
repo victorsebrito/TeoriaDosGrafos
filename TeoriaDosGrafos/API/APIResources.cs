@@ -83,7 +83,7 @@ namespace TeoriaDosGrafos.API
             if (context.WasRespondedTo) return context;
 
             StringBuilder loBuilder = new StringBuilder();
-            loBuilder.Append("<!DOCTYPE html><html><body style=\"font-size: 1.5em; text-align: center;\"><table border=\"1\">");
+            loBuilder.Append("<table class=\"table table-bordered text-center\">");
 
             loBuilder.Append("<tr><th></th>");
             foreach (Vertice loVertice in loCliente.Grafo.Vertices)
@@ -111,7 +111,7 @@ namespace TeoriaDosGrafos.API
                 loBuilder.Append("</tr>");
             }
 
-            loBuilder.Append("</table></body></html>");
+            loBuilder.Append("</table>");
 
             context.Response.ContentType = ContentType.HTML;
             context.Response.ContentEncoding = Encoding.UTF8;

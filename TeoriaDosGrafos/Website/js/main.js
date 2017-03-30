@@ -75,6 +75,25 @@ var getQueryString = function (form) {
     return queryString;
 }
 
+var alerta = function (sucesso) {
+
+    if (sucesso != undefined) {
+        if (sucesso) {
+            $('#error-alert').hide();
+            $('#success-alert').fadeIn();
+        }
+        else {
+            $('#success-alert').hide();
+            $('#error-alert').fadeIn();
+        }
+    }
+    else {
+        $('#success-alert').fadeOut();
+        $('#error-alert').fadeOut();
+    }
+    
+}
+
 var novoGrafo = function () {
     var form = '#novoGrafo form';
     var queryString = getQueryString(form);
@@ -83,7 +102,70 @@ var novoGrafo = function () {
     return false;
 }
 
-var lerGrafo = function () {
-    api.grafo.get();
+var novoVertice = function () {
+    var formData = $('#novoVertice form').serializeArray();
+    var queryString = 'id=' + formData[0].value + '&nome=' + formData[1].value;
+
+    api.vertice.post(queryString);
+    return false;
 }
 
+var apagaVertice = function () {
+    var formData = $('#apagaVertice form').serializeArray();
+    var queryString = 'id=' + formData[0].value;
+
+    api.vertice.delete(queryString);
+    return false;
+}
+
+var arestasOfVertice = function () {
+    var formData = $('#arestasVertice form').serializeArray();
+    var queryString = 'id=' + formData[0].value;
+
+    api.vertice.arestas(queryString);
+    return false;
+}
+
+var grauVertice = function () {
+    $('#grauVertice').find('.item-grau').hide();
+    var formData = $('#grauVertice form').serializeArray();
+    var queryString = 'id=' + formData[0].value;
+
+    api.vertice.grau(queryString);
+    return false;
+}
+
+
+var verticesAdjacentes = function () {
+    $('#verticesAdjacentes').find('pre').hide();
+    var formData = $('#verticesAdjacentes form').serializeArray();
+    var queryString = 'id=' + formData[0].value;
+
+    api.vertice.adjacentes(queryString);
+    return false;
+}
+
+var novaAresta = function () {
+    var formData = $('#novaAresta form').serializeArray();
+    var queryString = 'origem=' + formData[0].value + '&destino=' + formData[1].value + '&peso=' + formData[1].value;
+
+    api.aresta.post(queryString);
+    return false;
+}
+
+var apagaAresta = function() {
+    var formData = $('#apagaAresta form').serializeArray();
+    var queryString = 'vertice1=' + formData[0].value + '&vertice2=' + formData[1].value;
+
+    api.aresta.delete(queryString);
+    return false;
+}
+
+var arestasEntreVertices = function () {
+    $('#arestasEntreVertices').find('pre').hide();
+    var formData = $('#arestasEntreVertices form').serializeArray();
+    var queryString = 'vertice1=' + formData[0].value + '&vertice2=' + formData[1].value;
+
+    api.aresta.lista(queryString);
+    return false;
+}

@@ -26,6 +26,16 @@
             <div class="col-md-12">
                 <h1>Teoria dos Grafos</h1>
             </div>
+            <div class="col-md-offset-4 col-md-4">
+                <div class="alert alert-success alert-dismissable fade in" id="success-alert">
+                    <a href="javascript:alerta();" class="close">&times;</a>
+                    <strong>Successo!</strong> A operação foi executada com êxito.
+                </div>
+                <div class="alert alert-danger alert-dismissable fade in" id="error-alert">
+                    <a href="javascript:alerta();" class="close">&times;</a>
+                    <strong>Erro!</strong> Confira o log no console de desenvolvedor.
+                </div>
+            </div>
         </div>
     </div>
     <div class="container">
@@ -37,33 +47,34 @@
                         <h4>Grafos</h4>
                         <hr />
                         <button class="btn btn-default" onclick="changePage('#novoGrafo');">Novo Grafo</button>
-                        <button class="btn btn-default" onclick="changePage('#lerGrafo'); api.grafo.get();">Ler Grafo</button>
-                        <button class="btn btn-default" onclick="api.grafo.matriz();">Ver Matriz de Adjacência</button>
-                        <button class="btn btn-default" onclick="api.grafo.grau();">Ver Grau</button>
+                        <button class="btn btn-default" onclick="api.grafo.get();">Ler Grafo</button>
+                        <button class="btn btn-default" onclick="api.grafo.matriz();">Matriz de Adjacência</button>
+                        <button class="btn btn-default" onclick="api.grafo.grau();">Grau do Grafo</button>
                         <button class="btn btn-default" onclick="api.grafo.conexo();">É Conexo?</button>
                         <button class="btn btn-default" onclick="api.grafo.euler();">Possui caminho de Euler?</button>
                     </div>
                     <div class="grupo-funcoes">
                         <h4>Vértices</h4>
                         <hr />
-                        <button class="btn btn-default" onclick="api.vertice.post();">Novo Vértice</button>
-                        <button class="btn btn-default" onclick="api.vertice.delete();">Apagar Vértice</button>
-                        <button class="btn btn-default" onclick="api.vertice.arestas();">Ver Arestas do Vértice</button>
-                        <button class="btn btn-default" onclick="api.vertice.grau();">Ver Grau do Vértice</button>
+                        <button class="btn btn-default" onclick="changePage('#novoVertice');">Novo Vértice</button>
+                        <button class="btn btn-default" onclick="changePage('#apagaVertice');">Apagar Vértice</button>
+                        <button class="btn btn-default" onclick="changePage('#arestasVertice');">Arestas do Vértice</button>
+                        <button class="btn btn-default" onclick="changePage('#verticesAdjacentes');">Vértices Adjacentes</button>
+                        <button class="btn btn-default" onclick="changePage('#grauVertice');">Grau do Vértice</button>
                     </div>
                     <div class="grupo-funcoes">
                         <h4>Arestas</h4>
                         <hr />
-                        <button class="btn btn-default" onclick="api.aresta.post();">Nova Aresta</button>
-                        <button class="btn btn-default" onclick="api.aresta.delete();">Apagar Aresta</button>
-                        <button class="btn btn-default" onclick="api.aresta.lista();">Listar Arestas entre Vértices</button>
+                        <button class="btn btn-default" onclick="changePage('#novaAresta');">Nova Aresta</button>
+                        <button class="btn btn-default" onclick="changePage('#apagaAresta');">Apagar Aresta</button>
+                        <button class="btn btn-default" onclick="changePage('#arestasEntreVertices');">Arestas Entre Vértices</button>
                     </div>
                 </div>
             </div>
             <div class="col-md-5">
                 <div class="well page" id="novoGrafo">
                     <h1>Novo Grafo</h1>
-                    <form id="form-info" onsubmit="return novoGrafo()" method="post">
+                    <form id="form-novo-grafo" onsubmit="return novoGrafo()" method="post">
                         <div class="row lista-vertices">
                             <div class="col-md-12"><h4>Vértices</h4></div>
                             <div class="item-vertice">
@@ -87,7 +98,7 @@
                                                 <i class="material-icons">add</i>
                                                 <span class="ripple-container"></span>
                                             </button>
-                                            <button type="button" title="Adicionar" class="btn btn-fab btn-pink btn-remove">
+                                            <button type="button" title="Remover" class="btn btn-fab btn-pink btn-remove">
                                                 <i class="material-icons">remove</i>
                                                 <span class="ripple-container"></span>
                                             </button>
@@ -125,7 +136,7 @@
                                                 <i class="material-icons">add</i>
                                                 <span class="ripple-container"></span>
                                             </button>
-                                            <button type="button" title="Adicionar" class="btn btn-fab btn-pink btn-remove">
+                                            <button type="button" title="Remover" class="btn btn-fab btn-pink btn-remove">
                                                 <i class="material-icons">remove</i>
                                                 <span class="ripple-container"></span>
                                             </button>
@@ -142,33 +153,267 @@
                         </div>
                     </form>
                 </div>
-                <div class="well page" id="about">
-                    <h1>About the Paramore request page</h1>
-                    <p>This website was created by a Paramore fan (@<a href="https://twitter.com/TheParamoreBand" target="_blank" title="The Paramore Band">TheParamoreBand</a> / <a href="https://paramore.net.br" title="Paramore BR">paramore.net.br</a>). My name is <a href="https://twitter.com/victorsebrito" target="_blank" title="Victor Brito">Victor Brito</a> and the purpose of this page is to make it easier for other fans to request Paramore songs on the radio stations around the world. All requests to stations from the US and Canada made using this page will actually be sent directly to <a href="https://en.wikipedia.org/wiki/Mediabase" title="Mediabase - Wikipedia" target="_blank"><b>Mediabase</b></a>.</p>
-
-                    <p>This website is not affiliated with Paramore or Fueled By Ramen.</p>
-
-                    <h3>Get in touch</h3>
-                    <p>Something's wrong? Want to include your country's radio stations in this website? Need help with Paramore related stuff or anything else you think I can help? Send an email to <a href="mailto:victor.brito@paramore.net.br" title="victor.brito@paramore.net.br">victor.brito@paramore.net.br</a> and I'll reply as soon as I see your message!</p>
-
-                    <h3>Frequently Asked Questions</h3>
-
-                    <h4>&bull; What do I need to do?</h4>
-                    <p>Choose the radio station you want to send the request to, enter the captcha code (forced by Mediabase to avoid fake requests) and click send. As simple as that, since you'll have filled out the form in the settings page before making the first request.</p>
-
-                    <h4>&bull; Why is my personal information needed?</h4>
-                    <p>Mediabase asks you to provide some information before requesting songs, but your name is actually the only required information. Still, I insist you fill out the whole form, I've read they may use the information (like zip code) to give priority to specific requests that coming from near a station.</p>
-
-                    <h4>&bull; Where is my information stored?</h4>
-                    <p>As I said, all the requests are sent directly to Mediabase and your personal info will never go through my server; it's being stored in your own web browser, so you don't need to type it everytime you're making a request. It's faster and easier this way! ;)</p>
-
-                    <h4>&bull; How many requests can I make?</h4>
-                    <p>Mediabase tracks your IP so you can only make 1 request per day to each radio station.</p>
-
+                <div class="well page" id="lerGrafo">
+                    <h1>Ler Grafo</h1>
+                    <pre class="prettyprint"></pre>
                 </div>
-                <div class="well page" id="request">
-                    <h1>Radio Stations</h1>
+                <div class="well page" id="matrizDeAdjacencia">
+                    <h1>Matriz de Adjacência</h1>
+                    <div class="placeholder"></div>
+                </div>
+                <div class="well page" id="verGrau">
+                    <h1>Grau do Grafo</h1>
+                    <div class="item-grau" id="grau-maximo">
+                        <h3>Grau Máximo: </h3>
+                        <h2 class="placeholder"></h2><h4 class="placeholder"></h4>
+                    </div>
+                    <div class="item-grau" id="grau-medio">
+                        <h3>Grau Médio: </h3>
+                        <h2 class="placeholder"></h2>
+                    </div>
+                    <div class="item-grau" id="grau-minimo">
+                        <h3>Grau Mínimo: </h3>
+                        <h2 class="placeholder"></h2><h4 class="placeholder"></h4>
+                    </div>
+                </div>
+                <div class="well page" id="isConexo">
+                    <h1>É Conexo?</h1>
+                    <div id="bodyIsConexo" class="text-center">
+                        <i class="material-icons" id="is-conexo-icon"></i>
+                    </div>
+                </div>
+                <div class="well page" id="possuiEuler">
+                    <h1>Possui caminho de Euler?</h1>
+                    <div id="bodyPossuiEuler" class="text-center">
+                        <i class="material-icons" id="possui-euler-icon"></i>
+                    </div>
+                </div>
 
+                <div id="novoVertice" class="well page">
+                    <h1>Novo Vértice</h1>
+                    <form id="form-novo-vertice" onsubmit="return novoVertice()" method="post">
+                        <div class="row lista-vertices">
+                            <div class="item-vertice">
+                                <div class="col-md-12">
+                                    <div class="col-sm-3">
+                                        <div class="form-group required">
+                                            <label for="id" class="control-label">ID:</label>
+                                            <input type="number" class="form-control" id="id" name="id" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-5">
+                                        <div class="form-group required">
+                                            <label for="nome" class="control-label">Nome:</label>
+                                            <input type="text" class="form-control" id="nome" name="nome" maxlength="25" required>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 text-right">
+                                <!--<button type="button" class="btn btn-default" id="clear-form-info">Limpar</button>-->
+                                <button type="submit" class="btn btn-primary">Enviar</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div id="apagaVertice" class="well page">
+                    <h1>Apagar Vértice</h1>
+                    <form id="form-apaga-vertice" onsubmit="return apagaVertice()" method="post">
+                        <div class="row lista-vertices">
+                            <div class="item-vertice">
+                                <div class="col-md-12">
+                                    <div class="col-sm-3">
+                                        <div class="form-group required">
+                                            <label for="id" class="control-label">ID:</label>
+                                            <input type="number" class="form-control" id="id" name="id" required>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 text-right">
+                                <!--<button type="button" class="btn btn-default" id="clear-form-info">Limpar</button>-->
+                                <button type="submit" class="btn btn-primary">Enviar</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div id="arestasVertice" class="well page">
+                    <h1>Arestas do Vértice</h1>
+                    <form id="form-arestas-vertice" onsubmit="return arestasOfVertice()" method="post">
+                        <div class="row lista-vertices">
+                            <div class="item-vertice">
+                                <div class="col-md-12">
+                                    <div class="col-sm-3">
+                                        <div class="form-group required">
+                                            <label for="id" class="control-label">ID:</label>
+                                            <input type="number" class="form-control" id="id" name="id" required>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 text-right">
+                                <!--<button type="button" class="btn btn-default" id="clear-form-info">Limpar</button>-->
+                                <button type="submit" class="btn btn-primary">Enviar</button>
+                            </div>
+                        </div>
+                    </form>
+
+                    <pre class="prettyprint" style="display: none;"></pre>
+                </div>
+                <div id="verticesAdjacentes" class="well page">
+                    <h1>Vértices Adjacentes</h1>
+                    <form id="form-novo-grafo" onsubmit="return verticesAdjacentes();" method="post">
+                        <div class="row lista-vertices">
+                            <div class="item-vertice">
+                                <div class="col-md-12">
+                                    <div class="col-sm-3">
+                                        <div class="form-group required">
+                                            <label for="id" class="control-label">ID:</label>
+                                            <input type="number" class="form-control" id="id" name="id" required>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 text-right">
+                                <!--<button type="button" class="btn btn-default" id="clear-form-info">Limpar</button>-->
+                                <button type="submit" class="btn btn-primary">Enviar</button>
+                            </div>
+                        </div>
+                    </form>
+
+                    <pre class="prettyprint" style="display: none;"></pre>
+                </div>
+                <div id="grauVertice" class="well page">
+                    <h1>Grau do Vértice</h1>
+                    <form id="form-novo-grafo" onsubmit="return grauVertice()" method="post">
+                        <div class="row lista-vertices">
+                            <div class="item-vertice">
+                                <div class="col-md-12">
+                                    <div class="col-sm-3">
+                                        <div class="form-group required">
+                                            <label for="id" class="control-label">ID:</label>
+                                            <input type="number" class="form-control" id="id" name="id" required>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 text-right">
+                                <!--<button type="button" class="btn btn-default" id="clear-form-info">Limpar</button>-->
+                                <button type="submit" class="btn btn-primary">Enviar</button>
+                            </div>
+                        </div>
+                    </form>
+
+                    <div class="item-grau" style="display: none;">
+                        <h3>Grau: </h3>
+                        <h2 class="placeholder"></h2>
+                    </div>
+                </div>
+
+                <div id="novaAresta" class="well page">
+                    <h1>Nova Aresta</h1>
+                    <form id="form-nova-aresta" onsubmit="return novaAresta()" method="post">
+                        <div class="row lista-arestas">
+                            <div class="item-aresta">
+                                <div class="col-md-12">
+                                    <div class="col-sm-3">
+                                        <div class="form-group required">
+                                            <label for="id" class="control-label">Origem:</label>
+                                            <input type="number" class="form-control" id="origem" name="origem" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <div class="form-group required">
+                                            <label for="name" class="control-label">Destino:</label>
+                                            <input type="number" class="form-control" id="destino" name="destino" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <div class="form-group required">
+                                            <label for="name" class="control-label">Peso</label>
+                                            <input type="number" class="form-control" id="peso" name="peso" required>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 text-right">
+                                <!--<button type="button" class="btn btn-default" id="clear-form-info">Limpar</button>-->
+                                <button type="submit" class="btn btn-primary">Enviar</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div id="apagaAresta" class="well page">
+                    <h1>Apagar Aresta</h1>
+                    <form id="form-nova-aresta" onsubmit="return apagaAresta()" method="post">
+                        <div class="row lista-arestas">
+                            <div class="item-aresta">
+                                <div class="col-md-12">
+                                    <div class="col-sm-3">
+                                        <div class="form-group required">
+                                            <label for="id" class="control-label">Vértice 1:</label>
+                                            <input type="number" class="form-control" id="origem" name="origem" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <div class="form-group required">
+                                            <label for="name" class="control-label">Vértice 2:</label>
+                                            <input type="number" class="form-control" id="destino" name="destino" required>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 text-right">
+                                <!--<button type="button" class="btn btn-default" id="clear-form-info">Limpar</button>-->
+                                <button type="submit" class="btn btn-primary">Enviar</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div id="arestasEntreVertices" class="well page">
+                    <h1>Arestas Entre Vértices</h1>
+                    <form id="form-nova-aresta" onsubmit="return arestasEntreVertices()" method="post">
+                        <div class="row lista-arestas">
+                            <div class="item-aresta">
+                                <div class="col-md-12">
+                                    <div class="col-sm-3">
+                                        <div class="form-group required">
+                                            <label for="id" class="control-label">Vértice 1:</label>
+                                            <input type="number" class="form-control" id="origem" name="origem" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <div class="form-group required">
+                                            <label for="name" class="control-label">Vértice 2:</label>
+                                            <input type="number" class="form-control" id="destino" name="destino" required>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 text-right">
+                                <!--<button type="button" class="btn btn-default" id="clear-form-info">Limpar</button>-->
+                                <button type="submit" class="btn btn-primary">Enviar</button>
+                            </div>
+                        </div>
+                    </form>
+
+                    <pre class="prettyprint" style="display: none;"></pre>
                 </div>
             </div>
         </div>
@@ -180,5 +425,6 @@
     <script src="js/ripples.min.js"></script>
     <script src="js/api.js"></script>
     <script src="js/main.js"></script>
+    <script src="js/run_prettify.js"></script>
 </body>
 </html>

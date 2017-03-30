@@ -45,10 +45,6 @@ p {
     opacity: 1;
 }
 
-.page-button {
-    margin-bottom: 10px !important;
-}
-
 .btn-pink {
 	background-color: #e91e63 !important;
 	color: white !important;
@@ -59,10 +55,6 @@ p {
 	color: white !important;
 }
 
-#novoGrafo h4 {
-    margin-bottom: -50px;
-}
-
 .form-group .btn-fab {
     height: 35px;
     width: 35px;
@@ -70,6 +62,33 @@ p {
     margin-top: 25px;
 }
 
-.lista-arestas > div:nth-child(2) .btn-remove, .lista-vertices > div:nth-child(2) .btn-remove {
+.alert {
+    height: 35px;
+    padding: 7px 30px;
+    border-radius: 2px;
+    -webkit-box-shadow: 0 0 10px 0 rgba(0,0,0,0.1);
+    box-shadow: 0 0 10px 0 rgba(0,0,0,0.1);
     display: none;
+}
+
+.alert-success {
+    border: #008600 1px solid;
+}
+
+.alert-danger {
+    background-color: #9e241b;
+    border: #7d140c 1px solid;
+}
+
+.item-grau h2, .item-grau h4 {
+    display: inline;
+    vertical-align: middle;
+}
+
+#is-conexo-icon, #possui-euler-icon {
+    font-size: 25rem !important;
+}
+
+th {
+    text-align: center;
 }
