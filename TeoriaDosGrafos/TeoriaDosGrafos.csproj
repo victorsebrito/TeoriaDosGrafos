@@ -55,6 +55,8 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
+    <None Include="Website\exemplo.json" />
+    <None Include="Website\Grafos.json" />
     <None Include="Website\js\material.min.js.map" />
     <None Include="Website\js\ripples.min.js.map" />
   </ItemGroup>
@@ -66,10 +68,12 @@
     <Content Include="Website\index.html" />
     <Content Include="Website\js\api.js" />
     <Content Include="Website\js\bootstrap.min.js" />
+    <Content Include="Website\js\d3.v4.min.js" />
     <Content Include="Website\js\jquery-2.2.4.min.js" />
     <Content Include="Website\js\main.js" />
     <Content Include="Website\js\material.min.js" />
     <Content Include="Website\js\ripples.min.js" />
+    <Content Include="Website\js\run_prettify.js" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

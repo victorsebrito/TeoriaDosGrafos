@@ -1,0 +1,18 @@
+{
+  "Vertices": [
+    {"id": 1, "nome": "a"},
+    {"id": 2, "nome": "b"},
+    {"id": 3, "nome": "c"},
+    {"id": 4, "nome": "d"},
+	{"id": 5, "nome": "e"},
+    {"id": 6, "nome": "f"},
+    {"id": 7, "nome": "g"},
+    {"id": 8, "nome": "h"}
+  
+  ],
+  
+  "Arestas": [
+    {"source": 1, "target": 2, "peso": 1},
+    {"source": 1, "target": 3, "peso": 2}
+   ]
+}
