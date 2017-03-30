@@ -109,18 +109,17 @@ var alerta = function (sucesso) {
     if (sucesso != undefined) {
         if (sucesso) {
             $('#error-alert').hide();
-            $('#success-alert').fadeIn();
+            $('#success-alert').fadeIn(300).delay(2000).fadeOut(300);
         }
         else {
             $('#success-alert').hide();
-            $('#error-alert').fadeIn();
+            $('#error-alert').fadeIn(300).delay(2000).fadeOut(300);
         }
     }
     else {
         $('#success-alert').fadeOut();
         $('#error-alert').fadeOut();
     }
-    
 }
 
 var novoGrafo = function () {

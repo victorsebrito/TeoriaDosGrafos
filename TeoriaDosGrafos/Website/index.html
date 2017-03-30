@@ -47,6 +47,7 @@
                         <h4>Grafos</h4>
                         <hr />
                         <button class="btn btn-default" onclick="changePage('#novoGrafo');">Novo Grafo</button>
+                        <button class="btn btn-default" onclick="changePage('#verGrafo');">Ver Grafo</button>
                         <button class="btn btn-default" onclick="api.grafo.get();">Ler Grafo</button>
                         <button class="btn btn-default" onclick="api.grafo.matriz();">Matriz de Adjacência</button>
                         <button class="btn btn-default" onclick="api.grafo.grau();">Grau do Grafo</button>
@@ -164,6 +165,9 @@
                             </div>
                         </div>
                     </form>
+                </div>
+                <div id="verGrafo" class="well page">
+                    <h1>Ver Grafo</h1>
                 </div>
                 <div class="well page" id="lerGrafo">
                     <h1>Ler Grafo</h1>
