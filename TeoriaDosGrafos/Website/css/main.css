@@ -1,0 +1,75 @@
+body {
+    background-color: #212121 !important;
+}
+
+textarea {
+    resize: none;
+}
+
+.form-group.required .control-label:after {
+  content:" *";
+  color: #f44336;
+}
+
+p {
+    text-align: justify;
+    text-indent: 30px;
+}
+
+.header {
+	height: 270px;
+	background-color: rgb(33, 150, 243);
+	color: white;
+}
+
+.header a, .header a:hover, .header a:visited {
+	color: white;
+}
+
+.pages {
+	margin-top: -145px;
+}
+
+.page {
+    transform: translateY(1080px);
+    transition: transform 0 linear;
+    display: none;
+    opacity: 0;
+    font-size: 16px;
+}
+
+.page.active {
+    transform: translateY(0px);
+    transition: all 0.3s ease-out;
+    display: block;
+    opacity: 1;
+}
+
+.page-button {
+    margin-bottom: 10px !important;
+}
+
+.btn-pink {
+	background-color: #e91e63 !important;
+	color: white !important;
+}
+
+.btn-pink:hover {
+	background-color: #d81b60 !important;
+	color: white !important;
+}
+
+#novoGrafo h4 {
+    margin-bottom: -50px;
+}
+
+.form-group .btn-fab {
+    height: 35px;
+    width: 35px;
+    min-width: 35px;
+    margin-top: 25px;
+}
+
+.lista-arestas > div:nth-child(2) .btn-remove, .lista-vertices > div:nth-child(2) .btn-remove {
+    display: none;
+}

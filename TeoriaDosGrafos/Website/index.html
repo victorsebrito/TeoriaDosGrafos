@@ -1,13 +1,184 @@
 ﻿<!DOCTYPE html>
-
-<html lang="pt-BR" xmlns="http://www.w3.org/1999/xhtml">
+<html lang="en">
 <head>
-    <meta charset="utf-8" />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
     <title>Teoria dos Grafos</title>
-    <script src="js/jquery-2.2.4.min.js"></script>
-    <script src="js/api.js"></script>
+    <!-- Material Design fonts -->
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Roboto:300,400,500,700">
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/icon?family=Material+Icons">
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+
+    <!-- Bootstrap Material Design -->
+    <link rel="stylesheet" type="text/css" href="css/bootstrap-material-design.min.css">
+    <link rel="stylesheet" type="text/css" href="css/ripples.min.css">
+    <link href="css/main.css" rel="stylesheet">
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
 </head>
 <body>
+    <div class="container-fluid header text-center">
+        <div class="row">
+            <div class="col-md-12">
+                <h1>Teoria dos Grafos</h1>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row pages">
+            <div class="well col-md-offset-1 col-md-5">
+                <h1>Lista de funções</h1><br />
+                <div class="lista-funcoes">
+                    <div class="grupo-funcoes">
+                        <h4>Grafos</h4>
+                        <hr />
+                        <button class="btn btn-default" onclick="changePage('#novoGrafo');">Novo Grafo</button>
+                        <button class="btn btn-default" onclick="changePage('#lerGrafo'); api.grafo.get();">Ler Grafo</button>
+                        <button class="btn btn-default" onclick="api.grafo.matriz();">Ver Matriz de Adjacência</button>
+                        <button class="btn btn-default" onclick="api.grafo.grau();">Ver Grau</button>
+                        <button class="btn btn-default" onclick="api.grafo.conexo();">É Conexo?</button>
+                        <button class="btn btn-default" onclick="api.grafo.euler();">Possui caminho de Euler?</button>
+                    </div>
+                    <div class="grupo-funcoes">
+                        <h4>Vértices</h4>
+                        <hr />
+                        <button class="btn btn-default" onclick="api.vertice.post();">Novo Vértice</button>
+                        <button class="btn btn-default" onclick="api.vertice.delete();">Apagar Vértice</button>
+                        <button class="btn btn-default" onclick="api.vertice.arestas();">Ver Arestas do Vértice</button>
+                        <button class="btn btn-default" onclick="api.vertice.grau();">Ver Grau do Vértice</button>
+                    </div>
+                    <div class="grupo-funcoes">
+                        <h4>Arestas</h4>
+                        <hr />
+                        <button class="btn btn-default" onclick="api.aresta.post();">Nova Aresta</button>
+                        <button class="btn btn-default" onclick="api.aresta.delete();">Apagar Aresta</button>
+                        <button class="btn btn-default" onclick="api.aresta.lista();">Listar Arestas entre Vértices</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="well page" id="novoGrafo">
+                    <h1>Novo Grafo</h1>
+                    <form id="form-info" onsubmit="return novoGrafo()" method="post">
+                        <div class="row lista-vertices">
+                            <div class="col-md-12"><h4>Vértices</h4></div>
+                            <div class="item-vertice">
+                                <input type="hidden" name="tipo" value="vertice" />
+                                <div class="col-md-12">
+                                    <div class="col-sm-3">
+                                        <div class="form-group required">
+                                            <label for="id" class="control-label">ID:</label>
+                                            <input type="number" class="form-control" id="id" name="id" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-5">
+                                        <div class="form-group required">
+                                            <label for="nome" class="control-label">Nome:</label>
+                                            <input type="text" class="form-control" id="nome" name="nome" maxlength="25" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <div class="form-group">
+                                            <button type="button" title="Adicionar" class="btn btn-fab btn-pink btn-add">
+                                                <i class="material-icons">add</i>
+                                                <span class="ripple-container"></span>
+                                            </button>
+                                            <button type="button" title="Adicionar" class="btn btn-fab btn-pink btn-remove">
+                                                <i class="material-icons">remove</i>
+                                                <span class="ripple-container"></span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row lista-arestas">
+                            <div class="col-md-12"><h4>Arestas</h4></div>
+                            <div class="item-aresta">
+                                <input type="hidden" name="tipo" value="aresta" />
+                                <div class="col-md-12">
+                                    <div class="col-sm-3">
+                                        <div class="form-group required">
+                                            <label for="id" class="control-label">Origem:</label>
+                                            <input type="number" class="form-control" id="origem" name="origem" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <div class="form-group required">
+                                            <label for="name" class="control-label">Destino:</label>
+                                            <input type="number" class="form-control" id="destino" name="destino" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <div class="form-group required">
+                                            <label for="name" class="control-label">Peso</label>
+                                            <input type="number" class="form-control" id="peso" name="peso" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <div class="form-group">
+                                            <button type="button" title="Adicionar" class="btn btn-fab btn-pink btn-add">
+                                                <i class="material-icons">add</i>
+                                                <span class="ripple-container"></span>
+                                            </button>
+                                            <button type="button" title="Adicionar" class="btn btn-fab btn-pink btn-remove">
+                                                <i class="material-icons">remove</i>
+                                                <span class="ripple-container"></span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 text-right">
+                                <!--<button type="button" class="btn btn-default" id="clear-form-info">Limpar</button>-->
+                                <button type="submit" class="btn btn-primary">Enviar</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="well page" id="about">
+                    <h1>About the Paramore request page</h1>
+                    <p>This website was created by a Paramore fan (@<a href="https://twitter.com/TheParamoreBand" target="_blank" title="The Paramore Band">TheParamoreBand</a> / <a href="https://paramore.net.br" title="Paramore BR">paramore.net.br</a>). My name is <a href="https://twitter.com/victorsebrito" target="_blank" title="Victor Brito">Victor Brito</a> and the purpose of this page is to make it easier for other fans to request Paramore songs on the radio stations around the world. All requests to stations from the US and Canada made using this page will actually be sent directly to <a href="https://en.wikipedia.org/wiki/Mediabase" title="Mediabase - Wikipedia" target="_blank"><b>Mediabase</b></a>.</p>
 
+                    <p>This website is not affiliated with Paramore or Fueled By Ramen.</p>
+
+                    <h3>Get in touch</h3>
+                    <p>Something's wrong? Want to include your country's radio stations in this website? Need help with Paramore related stuff or anything else you think I can help? Send an email to <a href="mailto:victor.brito@paramore.net.br" title="victor.brito@paramore.net.br">victor.brito@paramore.net.br</a> and I'll reply as soon as I see your message!</p>
+
+                    <h3>Frequently Asked Questions</h3>
+
+                    <h4>&bull; What do I need to do?</h4>
+                    <p>Choose the radio station you want to send the request to, enter the captcha code (forced by Mediabase to avoid fake requests) and click send. As simple as that, since you'll have filled out the form in the settings page before making the first request.</p>
+
+                    <h4>&bull; Why is my personal information needed?</h4>
+                    <p>Mediabase asks you to provide some information before requesting songs, but your name is actually the only required information. Still, I insist you fill out the whole form, I've read they may use the information (like zip code) to give priority to specific requests that coming from near a station.</p>
+
+                    <h4>&bull; Where is my information stored?</h4>
+                    <p>As I said, all the requests are sent directly to Mediabase and your personal info will never go through my server; it's being stored in your own web browser, so you don't need to type it everytime you're making a request. It's faster and easier this way! ;)</p>
+
+                    <h4>&bull; How many requests can I make?</h4>
+                    <p>Mediabase tracks your IP so you can only make 1 request per day to each radio station.</p>
+
+                </div>
+                <div class="well page" id="request">
+                    <h1>Radio Stations</h1>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/jquery-2.2.4.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/material.min.js"></script>
+    <script src="js/ripples.min.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/main.js"></script>
 </body>
 </html>

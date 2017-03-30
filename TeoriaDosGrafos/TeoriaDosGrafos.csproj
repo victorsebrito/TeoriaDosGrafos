@@ -55,10 +55,21 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
+    <None Include="Website\js\material.min.js.map" />
+    <None Include="Website\js\ripples.min.js.map" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Website\css\bootstrap-material-design.min.css" />
+    <Content Include="Website\css\bootstrap.min.css" />
+    <Content Include="Website\css\main.css" />
+    <Content Include="Website\css\ripples.min.css" />
     <Content Include="Website\index.html" />
     <Content Include="Website\js\api.js" />
+    <Content Include="Website\js\bootstrap.min.js" />
+    <Content Include="Website\js\jquery-2.2.4.min.js" />
+    <Content Include="Website\js\main.js" />
+    <Content Include="Website\js\material.min.js" />
+    <Content Include="Website\js\ripples.min.js" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

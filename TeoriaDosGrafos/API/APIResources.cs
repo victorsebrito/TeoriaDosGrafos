@@ -329,7 +329,7 @@ namespace TeoriaDosGrafos.API
         }
 
         /// <summary>
-        /// Retorna a lista de vértices adjacentes ao vértice passado por parâmetro.
+        /// Retorna a lista de arestas do vértice.
         /// </summary>
         [RestRoute(HttpMethod = HttpMethod.POST, PathInfo = "api/vertice/arestas")]
         public IHttpContext GetArestasOfVertice(IHttpContext context)
