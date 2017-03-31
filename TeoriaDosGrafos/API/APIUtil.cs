@@ -60,11 +60,16 @@ namespace TeoriaDosGrafos.API
             if (GetCliente(aoContext) != null)
                 GetCliente(aoContext).LastUpdated = DateTime.Now;
 
-            foreach (Cliente loCliente in Servidor.Clientes)
+            try
             {
-                if ((DateTime.Now - loCliente.LastUpdated).Minutes >= 15)
-                    Servidor.Clientes.Remove(loCliente);
+                foreach (Cliente loCliente in Servidor.Clientes)
+                {
+                    if ((DateTime.Now - loCliente.LastUpdated).Minutes >= 15)
+                        Servidor.Clientes.Remove(loCliente);
+                }
             }
+            catch { };
+            
         }
 
         #endregion
