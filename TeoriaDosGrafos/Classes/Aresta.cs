@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using TeoriaDosGrafos.API;
 
 namespace TeoriaDosGrafos.Classes
@@ -12,8 +13,13 @@ namespace TeoriaDosGrafos.Classes
             this.Peso = aoPeso;
         }
 
+        [JsonProperty(PropertyName = "source")]
         public int Origem { get; set; }
+
+        [JsonProperty(PropertyName = "target")]
         public int Destino { get; set; }
+
+        [JsonProperty(PropertyName = "peso")]
         public int Peso { get; set; }
 
 

@@ -73,6 +73,55 @@ var api = {
             rest.post('api/grafo', data, function (data, status, request) {
                 grafoID = request.getResponseHeader('X-Grafo-ID');
                 alerta(true);
+                ativarBotoes(true);
+            });
+        },
+        ver: function () {
+            rest.get('api/grafo', function (graph, status, request) {
+                $('svg').text("");
+
+                var link = svg.append("g")
+                    .attr("class", "links")
+                    .selectAll("line")
+                    .data(graph.Arestas)
+                    .enter().append("line")
+                    .attr("stroke-width", function (d) { return Math.sqrt(d.peso); });
+
+                var node = svg.append("g")
+                    .attr("class", "nodes")
+                    .selectAll("circle")
+                    .data(graph.Vertices)
+                    .enter().append("circle")
+                    .attr("r", 5)
+                    .attr("fill", function (d) { return color(d.id); })
+                    .call(d3.drag()
+                        .on("start", dragstarted)
+                        .on("drag", dragged)
+                        .on("end", dragended));
+
+                node.append("title")
+                    .text(function (d) { return d.nome; });
+
+                simulation
+                    .nodes(graph.Vertices)
+                    .on("tick", ticked);
+
+                simulation.force("link")
+                    .links(graph.Arestas);
+
+                function ticked() {
+                    link
+                        .attr("x1", function (d) { return d.source.x; })
+                        .attr("y1", function (d) { return d.source.y; })
+                        .attr("x2", function (d) { return d.target.x; })
+                        .attr("y2", function (d) { return d.target.y; });
+
+                    node
+                        .attr("cx", function (d) { return d.x; })
+                        .attr("cy", function (d) { return d.y; });
+                }
+
+                changePage('#verGrafo');
             });
         },
         matriz: function () {

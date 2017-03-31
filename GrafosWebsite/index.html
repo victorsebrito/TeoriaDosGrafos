@@ -46,8 +46,8 @@
                     <div class="grupo-funcoes">
                         <h4>Grafos</h4>
                         <hr />
-                        <button class="btn btn-default" onclick="changePage('#novoGrafo');">Novo Grafo</button>
-                        <button class="btn btn-default" onclick="changePage('#verGrafo');">Ver Grafo</button>
+                        <button id="btnNovoGrafo" class="btn btn-default" onclick="changePage('#novoGrafo');">Novo Grafo</button>
+                        <button class="btn btn-default" onclick="api.grafo.ver();">Ver Grafo</button>
                         <button class="btn btn-default" onclick="api.grafo.get();">Ler Grafo</button>
                         <button class="btn btn-default" onclick="api.grafo.matriz();">Matriz de Adjacência</button>
                         <button class="btn btn-default" onclick="api.grafo.grau();">Grau do Grafo</button>
@@ -83,7 +83,7 @@
 
                         <div class="arquivo">
                             <input type="file" name="json" id="json" required>
-                            <a href="exemplo.json" download> Clique aqui para baixar um arquivo de exemplo</a>
+                            <a href="grafos.json" download> Clique aqui para baixar um arquivo de exemplo</a>
                         </div>
 
                         <div class="inserir-dados" style="display: none;">
@@ -168,7 +168,7 @@
                 </div>
                 <div id="verGrafo" class="well page">
                     <h1>Ver Grafo</h1>
-                    <svg width="960" height="600"></svg>
+                    <svg height="600" width="600" viewBox="0 0 600 600"></svg>
                 </div>
                 <div class="well page" id="lerGrafo">
                     <h1>Ler Grafo</h1>

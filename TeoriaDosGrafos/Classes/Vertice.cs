@@ -14,7 +14,10 @@ namespace TeoriaDosGrafos.Classes
             this.Nome = aoNome;
         }
 
+        [JsonProperty(PropertyName = "id")]
         public int ID { get; set; }
+
+        [JsonProperty(PropertyName = "nome")]
         public string Nome { get; set; }
     }
 }

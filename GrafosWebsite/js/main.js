@@ -2,7 +2,13 @@ var submitInfo;
 var page;
 var message_max = 25;
 
-$(document).ready(function(){
+var ativarBotoes = function (ativar) {
+    $('.lista-funcoes').find('button').not('#btnNovoGrafo').prop('disabled', !ativar);
+}
+
+$(document).ready(function () {
+
+    ativarBotoes(false);
 
 	changePage = function(id) {
 		if (id == page) return;
@@ -199,7 +205,6 @@ var arestasEntreVertices = function () {
     return false;
 }
 
-
 var svg = d3.select("svg"),
     width = +svg.attr("width"),
     height = +svg.attr("height");
@@ -211,50 +216,11 @@ var simulation = d3.forceSimulation()
     .force("charge", d3.forceManyBody())
     .force("center", d3.forceCenter(width / 2, height / 2));
 
-d3.json("Grafos.json", function (error, graph) {
-    if (error) throw error;
+//d3.json("grafos.json", function (error, graph) {
+//    if (error) throw error;
 
-    var link = svg.append("g")
-        .attr("class", "links")
-      .selectAll("line")
-      .data(graph.Arestas)
-      .enter().append("line")
-        .attr("stroke-width", function (d) { return Math.sqrt(d.peso); });
-
-    var node = svg.append("g")
-        .attr("class", "nodes")
-      .selectAll("circle")
-      .data(graph.Vertices)
-      .enter().append("circle")
-        .attr("r", 5)
-        .attr("fill", function (d) { return color(d.id); })
-        .call(d3.drag()
-            .on("start", dragstarted)
-            .on("drag", dragged)
-            .on("end", dragended));
-
-    node.append("title")
-        .text(function (d) { return d.nome; });
-
-    simulation
-        .nodes(graph.Vertices)
-        .on("tick", ticked);
-
-    simulation.force("link")
-        .links(graph.Arestas);
-
-    function ticked() {
-        link
-            .attr("x1", function (d) { return d.source.x; })
-            .attr("y1", function (d) { return d.source.y; })
-            .attr("x2", function (d) { return d.target.x; })
-            .attr("y2", function (d) { return d.target.y; });
-
-        node
-            .attr("cx", function (d) { return d.x; })
-            .attr("cy", function (d) { return d.y; });
-    }
-});
+    
+//});
 
 function dragstarted(d) {
     if (!d3.event.active) simulation.alphaTarget(0.3).restart();
