@@ -133,12 +133,12 @@ var api = {
         grau: function () {
             rest.get('api/grafo/grau', function (data, status, request) {
                 $('#grau-maximo').find('h2').text(data[2].NumGrau);
-                $('#grau-maximo').find('h4').text(' (Vértice: ' + data[2].Vertice.ID + ' - ' + data[2].Vertice.Nome + ')');
+                $('#grau-maximo').find('h4').text(' (Vértice: ' + data[2].Vertice.id + ' - ' + data[2].Vertice.nome + ')');
 
                 $('#grau-medio').find('h2').text(data[1].NumGrau);
 
                 $('#grau-minimo').find('h2').text(data[0].NumGrau);
-                $('#grau-minimo').find('h4').text(' (Vértice: ' + data[0].Vertice.ID + ' - ' + data[0].Vertice.Nome + ')');
+                $('#grau-minimo').find('h4').text(' (Vértice: ' + data[0].Vertice.id + ' - ' + data[0].Vertice.nome + ')');
                 changePage('#verGrau');
             });
         },
