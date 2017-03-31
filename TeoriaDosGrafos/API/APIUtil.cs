@@ -50,9 +50,21 @@ namespace TeoriaDosGrafos.API
         public static Cliente GetCliente(IHttpContext aoContext)
         {
             if (aoContext.Request.Headers["X-Grafo-ID"] != null)
-                return Servidor.Clientes.Find(c => c.ID == aoContext.Request.Headers["X-Grafo-ID"]);
+                return Servidor.Clientes.Find(c => c.ID.Equals(aoContext.Request.Headers["X-Grafo-ID"]));
             else
                 return null;
+        }
+
+        public static void UpdateClientes(IHttpContext aoContext)
+        {
+            if (GetCliente(aoContext) != null)
+                GetCliente(aoContext).LastUpdated = DateTime.Now;
+
+            foreach (Cliente loCliente in Servidor.Clientes)
+            {
+                if ((DateTime.Now - loCliente.LastUpdated).Minutes >= 15)
+                    Servidor.Clientes.Remove(loCliente);
+            }
         }
 
         #endregion

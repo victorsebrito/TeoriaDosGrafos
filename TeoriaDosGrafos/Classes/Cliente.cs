@@ -9,11 +9,13 @@ namespace TeoriaDosGrafos.Classes
     {
         public string ID { get; set; }
         public Grafo Grafo { get; set; }
+        public DateTime LastUpdated { get; set; }
 
         public Cliente()
         {
             ID = Guid.NewGuid().ToString();
             Grafo = new Grafo();
+            LastUpdated = DateTime.Now;
         }
     }
 }

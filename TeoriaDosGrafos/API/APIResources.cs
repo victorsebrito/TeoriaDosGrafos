@@ -18,7 +18,7 @@ namespace TeoriaDosGrafos.API
     {
 
         [RestRoute]
-        public IHttpContext SetAccessControlHeader(IHttpContext context)
+        public IHttpContext Init(IHttpContext context)
         {
             context.Response.AddHeader("Access-Control-Allow-Origin", "*");
             context.Response.AddHeader("Access-Control-Allow-Methods", "POST, GET, DELETE");
@@ -43,6 +43,8 @@ namespace TeoriaDosGrafos.API
         [RestRoute(HttpMethod = HttpMethod.GET, PathInfo = "api/grafo")]
         public IHttpContext GetGrafo(IHttpContext context)
         {
+            APIUtil.UpdateClientes(context);
+
             Cliente loCliente = APIUtil.ValidarCliente(context);
             if (context.WasRespondedTo) return context;
 
@@ -78,6 +80,8 @@ namespace TeoriaDosGrafos.API
             //    }
             //    i++;
             //}
+
+            APIUtil.UpdateClientes(context);
 
             Cliente loCliente = APIUtil.ValidarCliente(context);
             if (context.WasRespondedTo) return context;
@@ -126,6 +130,9 @@ namespace TeoriaDosGrafos.API
         [RestRoute(HttpMethod = HttpMethod.GET, PathInfo = "api/grafo/grau")]
         public IHttpContext GetGrauGrafo(IHttpContext context)
         {
+
+            APIUtil.UpdateClientes(context);
+
             Cliente loCliente = APIUtil.ValidarCliente(context);
             if (context.WasRespondedTo) return context;
 
@@ -175,6 +182,9 @@ namespace TeoriaDosGrafos.API
         [RestRoute(HttpMethod = HttpMethod.GET, PathInfo = "api/grafo/conexo")]
         public IHttpContext GetIsGrafoConexo(IHttpContext context)
         {
+
+            APIUtil.UpdateClientes(context);
+
             Cliente loCliente = APIUtil.ValidarCliente(context);
             if (context.WasRespondedTo) return context;
 
@@ -204,6 +214,9 @@ namespace TeoriaDosGrafos.API
         [RestRoute(HttpMethod = HttpMethod.GET, PathInfo = "api/grafo/euler")]
         public IHttpContext GetPossuiCaminhoEuler(IHttpContext context)
         {
+
+            APIUtil.UpdateClientes(context);
+
             Cliente loCliente = APIUtil.ValidarCliente(context);
             if (context.WasRespondedTo) return context;
 
@@ -235,6 +248,9 @@ namespace TeoriaDosGrafos.API
         [RestRoute(HttpMethod = HttpMethod.POST, PathInfo = "api/grafo")]
         public IHttpContext NovoGrafo(IHttpContext context)
         {
+
+            APIUtil.UpdateClientes(context);
+
             Dictionary<string, string> loArgs = APIUtil.GetDictionaryFromContext(context);
             Cliente loCliente = APIUtil.NovoCliente();
 
@@ -280,6 +296,8 @@ namespace TeoriaDosGrafos.API
         [RestRoute(HttpMethod = HttpMethod.POST, PathInfo = "api/vertice")]
         public IHttpContext NovoVertice(IHttpContext context)
         {
+            APIUtil.UpdateClientes(context);
+
             Cliente loCliente = APIUtil.ValidarCliente(context);
             if (context.WasRespondedTo) return context;
 
@@ -312,6 +330,8 @@ namespace TeoriaDosGrafos.API
         [RestRoute(HttpMethod = HttpMethod.DELETE, PathInfo = "api/vertice")]
         public IHttpContext ApagarVertice(IHttpContext context)
         {
+            APIUtil.UpdateClientes(context);
+
             Cliente loCliente = APIUtil.ValidarCliente(context);
             if (context.WasRespondedTo) return context;
 
@@ -336,6 +356,8 @@ namespace TeoriaDosGrafos.API
         [RestRoute(HttpMethod = HttpMethod.POST, PathInfo = "api/vertice/arestas")]
         public IHttpContext GetArestasOfVertice(IHttpContext context)
         {
+            APIUtil.UpdateClientes(context);
+
             Cliente loCliente = APIUtil.ValidarCliente(context);
             if (context.WasRespondedTo) return context;
 
@@ -362,6 +384,8 @@ namespace TeoriaDosGrafos.API
         [RestRoute(HttpMethod = HttpMethod.POST, PathInfo = "api/vertice/adjacentes")]
         public IHttpContext ListarVerticesAdjacentes(IHttpContext context)
         {
+            APIUtil.UpdateClientes(context);
+
             Cliente loCliente = APIUtil.ValidarCliente(context);
             if (context.WasRespondedTo) return context;
 
@@ -388,6 +412,8 @@ namespace TeoriaDosGrafos.API
         [RestRoute(HttpMethod = HttpMethod.POST, PathInfo = "api/vertice/grau")]
         public IHttpContext GetGrauVertice(IHttpContext context)
         {
+            APIUtil.UpdateClientes(context);
+
             Cliente loCliente = APIUtil.ValidarCliente(context);
             if (context.WasRespondedTo) return context;
 
@@ -413,6 +439,8 @@ namespace TeoriaDosGrafos.API
         [RestRoute(HttpMethod = HttpMethod.POST, PathInfo = "api/aresta/lista")]
         public IHttpContext ListaArestas(IHttpContext context)
         {
+            APIUtil.UpdateClientes(context);
+
             Cliente loCliente = APIUtil.ValidarCliente(context);
             if (context.WasRespondedTo) return context;
 
@@ -450,6 +478,8 @@ namespace TeoriaDosGrafos.API
         [RestRoute(HttpMethod = HttpMethod.POST, PathInfo = "api/aresta")]
         public IHttpContext NovaAresta(IHttpContext context)
         {
+            APIUtil.UpdateClientes(context);
+
             Cliente loCliente = APIUtil.ValidarCliente(context);
             if (context.WasRespondedTo) return context;
 
@@ -488,6 +518,8 @@ namespace TeoriaDosGrafos.API
         [RestRoute(HttpMethod = HttpMethod.DELETE, PathInfo = "api/aresta")]
         public IHttpContext DeletaAresta(IHttpContext context)
         {
+            APIUtil.UpdateClientes(context);
+
             Cliente loCliente = APIUtil.ValidarCliente(context);
             if (context.WasRespondedTo) return context;
 
