@@ -97,8 +97,8 @@ th {
     color: #333;
 }
 
-.arquivo a {
-    font-size: 0.9em;
+.arquivo .form-group {
+    margin-top: 0;
 }
 
 .links line {
