@@ -4,6 +4,7 @@ using System.Threading;
 using TeoriaDosGrafos.Classes;
 using System.Collections.Generic;
 using System.Linq;
+using System.Configuration;
 
 namespace TeoriaDosGrafos 
 {
@@ -16,7 +17,13 @@ namespace TeoriaDosGrafos
 		{
             Clientes = new List<Cliente>();
 
-            Server = new RestServer();
+            string loHost = string.IsNullOrEmpty(ConfigurationManager.AppSettings["Host"]) ? "localhost" : ConfigurationManager.AppSettings["Host"];
+            string loPort = string.IsNullOrEmpty(ConfigurationManager.AppSettings["Port"]) ? "1234" : ConfigurationManager.AppSettings["Port"];
+
+            Server = new RestServer(new ServerSettings() {
+                Host = loHost,
+                Port = loPort
+            });
             Server.LogToConsole().Start();
 
             while (Server.IsListening)
