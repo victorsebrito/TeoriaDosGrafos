@@ -531,7 +531,25 @@ namespace TeoriaDosGrafos.API
         #endregion
 
         #region Algoritmos
-        public static void FloydWarshall(int[,] graph, int verticesCount)
+
+        public static void Warshall(Grafo aoGrafo, int verticesCount)
+        {
+            int[,] loMatriz = new int[aoGrafo.Vertices.Count, aoGrafo.Vertices.Count];
+
+            for (int k = 0; k < verticesCount; ++k)
+            {
+                for (int i = 0; i < verticesCount; ++i)
+                {
+                    for (int j = 0; j < verticesCount; ++j)
+                    {
+                        loMatriz[i, j] = loMatriz[i, j] && (loMatriz[i, k + 1] || loMatriz[i + 1, k]);
+                     }
+                }
+            }
+        }
+
+
+        public static int[,] FloydWarshall(int[,] graph, int verticesCount)
         {
             int[,] distance = new int[verticesCount, verticesCount];
 
@@ -550,13 +568,25 @@ namespace TeoriaDosGrafos.API
                     }
                 }
             }
-
-            PrintFloydWarshall(distance, verticesCount);
+            return distance;            
         }
 
         private static void PrintFloydWarshall(int[,] distance, int verticesCount)
         {
-            throw new NotImplementedException();
+            Console.WriteLine("Shortest distances between every pair of vertices:");
+
+            for (int i = 0; i < verticesCount; ++i)
+            {
+                for (int j = 0; j < verticesCount; ++j)
+                {
+                    if (distance[i, j] == INF)
+                        Console.Write("INF".PadLeft(7));
+                    else
+                        Console.Write(distance[i, j].ToString().PadLeft(7));
+                }
+
+                Console.WriteLine();
+            }
         }
 
         public static void BellmanFord(Graph graph, int source)
