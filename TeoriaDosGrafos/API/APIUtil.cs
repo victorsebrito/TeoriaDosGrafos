@@ -69,9 +69,38 @@ namespace TeoriaDosGrafos.API
                 }
             }
             catch { };
-            
-        }
 
+        }
+        /// <summary>
+        /// Gera matriz de adjacência.
+        /// </summary>
+        /// <param name="aoGrafo"></param>
+        /// <returns></returns>
+        public static int[,] GetMatrizAdjacencia(Grafo aoGrafo)
+        {
+            int[,] loMatriz = new int[aoGrafo.Vertices.Count, aoGrafo.Vertices.Count];
+
+            int i, j;
+            i = 0;
+
+            foreach (Vertice loVertice in aoGrafo.Vertices)
+            {
+                j = 0;
+
+                foreach (Vertice loVertice2 in aoGrafo.Vertices)
+                {
+                    if (APIUtil.FindArestasByVerticesIDs(loVertice.ID, loVertice2.ID, aoGrafo).Count > 0)
+                        loMatriz[i, j] = 1;
+                    else
+                        loMatriz[i, j] = 0;
+
+                    j++;
+                }
+                i++;
+            }
+
+            return loMatriz;
+        }
         #endregion
         
         #region Vertices

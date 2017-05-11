@@ -60,27 +60,6 @@ namespace TeoriaDosGrafos.API
         [RestRoute(HttpMethod = HttpMethod.GET, PathInfo = "api/grafo/matriz")]
         public IHttpContext GetMatrizAdjacencia(IHttpContext context)
         {
-            //int[,] loMatriz = new int[Servidor.Grafo.Vertices.Count, Servidor.Grafo.Vertices.Count];
-
-            //int i, j;
-            //i = 0;
-
-            //foreach(Vertice loVertice in Servidor.Grafo.Vertices)
-            //{
-            //    j = 0;
-
-            //    foreach(Vertice loVertice2 in Servidor.Grafo.Vertices)
-            //    {
-            //        if (APIUtil.FindArestasByVerticesIDs(loVertice.ID, loVertice2.ID).Count > 0)
-            //            loMatriz[i, j] = 1;
-            //        else
-            //            loMatriz[i, j] = 0;
-
-            //        j++;
-            //    }
-            //    i++;
-            //}
-
             APIUtil.UpdateClientes(context);
 
             Cliente loCliente = APIUtil.ValidarCliente(context);
@@ -548,6 +527,109 @@ namespace TeoriaDosGrafos.API
                 }
             }
             return context;
+        }
+        #endregion
+
+        #region Algoritmos
+        public static void FloydWarshall(int[,] graph, int verticesCount)
+        {
+            int[,] distance = new int[verticesCount, verticesCount];
+
+            for (int i = 0; i < verticesCount; ++i)
+                for (int j = 0; j < verticesCount; ++j)
+                    distance[i, j] = graph[i, j];
+
+            for (int k = 0; k < verticesCount; ++k)
+            {
+                for (int i = 0; i < verticesCount; ++i)
+                {
+                    for (int j = 0; j < verticesCount; ++j)
+                    {
+                        if (distance[i, k] + distance[k, j] < distance[i, j])
+                            distance[i, j] = distance[i, k] + distance[k, j];
+                    }
+                }
+            }
+
+            PrintFloydWarshall(distance, verticesCount);
+        }
+
+        private static void PrintFloydWarshall(int[,] distance, int verticesCount)
+        {
+            throw new NotImplementedException();
+        }
+
+        public static void BellmanFord(Graph graph, int source)
+        {
+            int verticesCount = graph.VerticesCount;
+            int edgesCount = graph.EdgesCount;
+            int[] distance = new int[verticesCount];
+
+            for (int i = 0; i < verticesCount; i++)
+                distance[i] = int.MaxValue;
+
+            distance[source] = 0;
+
+            for (int i = 1; i <= verticesCount - 1; ++i)
+            {
+                for (int j = 0; j < edgesCount; ++j)
+                {
+                    int u = graph.edge[j].Source;
+                    int v = graph.edge[j].Destination;
+                    int weight = graph.edge[j].Weight;
+
+                    if (distance[u] != int.MaxValue && distance[u] + weight < distance[v])
+                        distance[v] = distance[u] + weight;
+                }
+            }
+
+            for (int i = 0; i < edgesCount; ++i)
+            {
+                int u = graph.edge[i].Source;
+                int v = graph.edge[i].Destination;
+                int weight = graph.edge[i].Weight;
+
+                if (distance[u] != int.MaxValue && distance[u] + weight < distance[v])
+                    Console.WriteLine("Graph contains negative weight cycle.");
+            }
+
+            PrintBellmanFord(distance, verticesCount);
+        }
+
+        private static void PrintBellmanFord(int[] distance, int verticesCount)
+        {
+            throw new NotImplementedException();
+        }
+
+        public static void Dijkstra(int[,] graph, int source, int verticesCount)
+        {
+            int[] distance = new int[verticesCount];
+            bool[] shortestPathTreeSet = new bool[verticesCount];
+
+            for (int i = 0; i < verticesCount; ++i)
+            {
+                distance[i] = int.MaxValue;
+                shortestPathTreeSet[i] = false;
+            }
+
+            distance[source] = 0;
+
+            for (int count = 0; count < verticesCount - 1; ++count)
+            {
+                int u = MinimumDistance(distance, shortestPathTreeSet, verticesCount);
+                shortestPathTreeSet[u] = true;
+
+                for (int v = 0; v < verticesCount; ++v)
+                    if (!shortestPathTreeSet[v] && Convert.ToBoolean(graph[u, v]) && distance[u] != int.MaxValue && distance[u] + graph[u, v] < distance[v])
+                        distance[v] = distance[u] + graph[u, v];
+            }
+
+            PrintDijkstra(distance, verticesCount);
+        }
+
+        private static void PrintDijkstra(int[] distance, int verticesCount)
+        {
+            throw new NotImplementedException();
         }
         #endregion
     }
