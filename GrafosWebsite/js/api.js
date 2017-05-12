@@ -189,7 +189,7 @@ var api = {
                 $('#possui-euler-icon').css('color', color);
                 changePage('#possuiEuler');
             });
-        }
+        },       
     },
 
     vertice: {

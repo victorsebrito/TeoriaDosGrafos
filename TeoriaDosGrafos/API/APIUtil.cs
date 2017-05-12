@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
-using System.Text;
 using TeoriaDosGrafos.Classes;
 
 namespace TeoriaDosGrafos.API
@@ -71,6 +70,74 @@ namespace TeoriaDosGrafos.API
             catch { };
 
         }
+
+        /// <summary>
+        /// Gera matriz booleana
+        /// </summary>
+        /// <param name="aoMatriz"></param>
+        /// <returns></returns>
+        public static object ConverteMatriz(object aoMatriz, int aiVerticesCount)
+        {
+            if (aoMatriz is int[,] loMatriz)
+            {                
+                bool[,] loBoolMatriz = new bool[,] { };
+
+                for (int i = 0; i < loMatriz.Length; i++)
+                {
+                    for (int j = 0; j < loMatriz.Length; j++)
+                    {
+                        if (loMatriz[i, j] == 1)
+                            loBoolMatriz[i, j] = true;
+                        else
+                            loBoolMatriz[i, j] = false;
+                    }
+                }
+
+                return loBoolMatriz;
+            }
+            else if (aoMatriz is bool[,] loMatrizB)
+            {
+                int[,] loMatrizI = new int[,] { };
+                for (int i = 0; i < loMatrizB.Length; i++)
+                {
+                    for (int j = 0; j < loMatrizB.Length; j++)
+                    {
+                        if (loMatrizB[i, j])
+                            loMatrizI[i, j] = 1;
+                        else
+                            loMatrizI[i, j] = 0;
+                    }
+                }
+
+                return loMatrizI;
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Gera matriz de adjacência.
+        /// </summary>
+        /// <param name="aoGrafo"></param>
+        /// <returns></returns>
+        public static int[,] GetMatrizAcessibilidade(Grafo aoGrafo)
+        {
+            int[,] loMatriz = GetMatrizAdjacencia(aoGrafo);
+
+            bool[,] loMatrizBool = (bool[,])ConverteMatriz(loMatriz);
+
+            //Algoritmo de Warshall
+            for (int k = 0; k < aoGrafo.Vertices.Count; ++k)
+            {
+                for (int i = 0; i < aoGrafo.Vertices.Count; ++i)
+                {
+                    for (int j = 0; j < aoGrafo.Vertices.Count; ++j)
+                        loMatrizBool[i, j] = loMatrizBool[i, j] && (loMatrizBool[i, k] || loMatrizBool[i, k]);
+                }
+            }
+
+            return (int[,])ConverteMatriz(loMatrizBool);
+        }
+
         /// <summary>
         /// Gera matriz de adjacência.
         /// </summary>
@@ -101,20 +168,23 @@ namespace TeoriaDosGrafos.API
 
             return loMatriz;
         }
+
+
         #endregion
-        
+
         #region Vertices
 
         public class Grau
         {
             public enum TiposGrau { Mínimo = 0, Médio = 1, Máximo = 2 }
 
-            public Grau(TiposGrau aoTipoGrau) {
+            public Grau(TiposGrau aoTipoGrau)
+            {
                 this.TipoGrau = aoTipoGrau.ToString();
                 this.Vertice = null;
                 this.NumGrau = null;
             }
-            
+
             public string TipoGrau { get; }
             public Vertice Vertice { get; set; }
             public int? NumGrau { get; set; }
@@ -144,8 +214,8 @@ namespace TeoriaDosGrafos.API
 
             if (aoArgs.ContainsKey("id"))
             {
-				int liID;
-                if(Int32.TryParse(aoArgs["id"], out liID))                
+                int liID;
+                if (Int32.TryParse(aoArgs["id"], out liID))
                     loVertice = FindVerticeByID(liID, loGrafo);
                 else
                     context.Response.SendResponse(HttpStatusCode.BadRequest);
@@ -174,7 +244,7 @@ namespace TeoriaDosGrafos.API
 
             List<Vertice> loListaVerticesAdjacentes = FindVerticesAdjacentesByID(aiVertice1, aoGrafo);
 
-            foreach(Vertice loVertice in loListaVerticesAdjacentes)
+            foreach (Vertice loVertice in loListaVerticesAdjacentes)
             {
                 if (loVertice.ID == aiVertice2)
                     return true;
@@ -184,7 +254,7 @@ namespace TeoriaDosGrafos.API
                     {
                         if (ExisteCaminhoEntreVertices(loVertice.ID, aiVertice2, aoGrafo, aoListaVerticesVisitados))
                             return true;
-                    }   
+                    }
                 }
 
             }
@@ -330,7 +400,7 @@ namespace TeoriaDosGrafos.API
         {
             List<Aresta> loListaArestas = new List<Aresta>();
 
-            foreach(Aresta loAresta in aoListaArestas)
+            foreach (Aresta loAresta in aoListaArestas)
             {
                 if (loAresta.IsArestaValida(aoGrafo))
                     loListaArestas.Add(loAresta);
@@ -356,5 +426,119 @@ namespace TeoriaDosGrafos.API
             return loNVC.AllKeys.ToDictionary(k => k, k => loNVC[k]);
         }
 
+        public static int[,] FloydWarshall(int[,] graph, int verticesCount)
+        {
+            int[,] distance = new int[verticesCount, verticesCount];
+
+            for (int i = 0; i < verticesCount; ++i)
+                for (int j = 0; j < verticesCount; ++j)
+                    distance[i, j] = graph[i, j];
+
+            for (int k = 0; k < verticesCount; ++k)
+            {
+                for (int i = 0; i < verticesCount; ++i)
+                {
+                    for (int j = 0; j < verticesCount; ++j)
+                    {
+                        if (distance[i, k] + distance[k, j] < distance[i, j])
+                            distance[i, j] = distance[i, k] + distance[k, j];
+                    }
+                }
+            }
+            return distance;
+        }
+
+        private static void PrintFloydWarshall(int[,] distance, int verticesCount)
+        {
+            Console.WriteLine("Shortest distances between every pair of vertices:");
+
+            for (int i = 0; i < verticesCount; ++i)
+            {
+                for (int j = 0; j < verticesCount; ++j)
+                {
+                    if (distance[i, j] == 9999999)
+                        Console.Write("INF".PadLeft(7));
+                    else
+                        Console.Write(distance[i, j].ToString().PadLeft(7));
+                }
+
+                Console.WriteLine();
+            }
+        }
+
+        public static void BellmanFord(Grafo graph, int source)
+        {
+            int verticesCount = graph.VerticesCount;
+            int edgesCount = graph.EdgesCount;
+            int[] distance = new int[verticesCount];
+
+            for (int i = 0; i < verticesCount; i++)
+                distance[i] = int.MaxValue;
+
+            distance[source] = 0;
+
+            for (int i = 1; i <= verticesCount - 1; ++i)
+            {
+                for (int j = 0; j < edgesCount; ++j)
+                {
+                    int u = graph.edge[j].Source;
+                    int v = graph.edge[j].Destination;
+                    int weight = graph.edge[j].Weight;
+
+                    if (distance[u] != int.MaxValue && distance[u] + weight < distance[v])
+                        distance[v] = distance[u] + weight;
+                }
+            }
+
+            for (int i = 0; i < edgesCount; ++i)
+            {
+                int u = graph.edge[i].Source;
+                int v = graph.edge[i].Destination;
+                int weight = graph.edge[i].Weight;
+
+                if (distance[u] != int.MaxValue && distance[u] + weight < distance[v])
+                    Console.WriteLine("Graph contains negative weight cycle.");
+            }
+
+            PrintBellmanFord(distance, verticesCount);
+        }
+
+        private static void PrintBellmanFord(int[] distance, int verticesCount)
+        {
+            throw new NotImplementedException();
+        }
+
+        public static void Dijkstra(int[,] graph, int source, int verticesCount)
+        {
+            int[] distance = new int[verticesCount];
+            bool[] shortestPathTreeSet = new bool[verticesCount];
+
+            for (int i = 0; i < verticesCount; ++i)
+            {
+                distance[i] = int.MaxValue;
+                shortestPathTreeSet[i] = false;
+            }
+
+            distance[source] = 0;
+
+            for (int count = 0; count < verticesCount - 1; ++count)
+            {
+                int u = MinimumDistance(distance, shortestPathTreeSet, verticesCount);
+                shortestPathTreeSet[u] = true;
+
+                for (int v = 0; v < verticesCount; ++v)
+                    if (!shortestPathTreeSet[v] && Convert.ToBoolean(graph[u, v]) && distance[u] != int.MaxValue && distance[u] + graph[u, v] < distance[v])
+                        distance[v] = distance[u] + graph[u, v];
+            }
+
+            PrintDijkstra(distance, verticesCount);
+        }
+
+        private static void PrintDijkstra(int[] distance, int verticesCount)
+        {
+            throw new NotImplementedException();
+        }
+
     }
 }
+

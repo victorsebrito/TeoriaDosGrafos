@@ -103,13 +103,30 @@ namespace TeoriaDosGrafos.API
             return context;
         }
 
+        /// Gera matriz de acessibilidade.
+        /// </summary>
+        /// <param name="aoGrafo"></param>
+        /// <returns></returns>
+        [RestRoute(HttpMethod = HttpMethod.GET, PathInfo = "api/grafo/matrizAce")]
+        public IHttpContext GetMatrizAcessibilidade(IHttpContext context)
+        {
+            APIUtil.UpdateClientes(context);
+            IHttpContext contextGrafo = GetGrafo(context);
+
+
+            context.Response.ContentType = ContentType.JSON;
+            context.Response.ContentEncoding = Encoding.UTF8;
+            context.Response.SendResponse(JsonConvert.SerializeObject());
+
+            return context;
+        }
+
         /// <summary>
         /// Retorna o grau mínimo, médio e máximo do grafo.
         /// </summary>
         [RestRoute(HttpMethod = HttpMethod.GET, PathInfo = "api/grafo/grau")]
         public IHttpContext GetGrauGrafo(IHttpContext context)
         {
-
             APIUtil.UpdateClientes(context);
 
             Cliente loCliente = APIUtil.ValidarCliente(context);
@@ -120,12 +137,12 @@ namespace TeoriaDosGrafos.API
                                           new APIUtil.Grau(APIUtil.Grau.TiposGrau.Máximo) };
             int liSomaGraus = 0;
 
-            foreach(Vertice loVertice in loCliente.Grafo.Vertices)
-            {                
+            foreach (Vertice loVertice in loCliente.Grafo.Vertices)
+            {
                 int liGrau = APIUtil.GetGrauVertice(loVertice.ID, loCliente.Grafo);
                 liSomaGraus += liGrau;
 
-                if(loListGrau[0].Vertice == null)
+                if (loListGrau[0].Vertice == null)
                 {
                     loListGrau[0].Vertice = loListGrau[2].Vertice = loVertice;
                     loListGrau[0].NumGrau = loListGrau[2].NumGrau = liGrau;
@@ -182,7 +199,7 @@ namespace TeoriaDosGrafos.API
                     }
                 }
             }
-            
+
             context.Response.SendResponse(JsonConvert.SerializeObject(true));
             return context;
         }
@@ -213,7 +230,7 @@ namespace TeoriaDosGrafos.API
                     context.Response.SendResponse(JsonConvert.SerializeObject(false));
                     return context;
                 }
-                    
+
             }
 
             context.Response.SendResponse(JsonConvert.SerializeObject(true));
@@ -400,8 +417,8 @@ namespace TeoriaDosGrafos.API
 
             Vertice loVertice = APIUtil.FindVerticeByArgs(loArgs, context);
 
-            if (loVertice != null)             
-                context.Response.SendResponse(APIUtil.GetGrauVertice(loVertice.ID, loCliente.Grafo).ToString());            
+            if (loVertice != null)
+                context.Response.SendResponse(APIUtil.GetGrauVertice(loVertice.ID, loCliente.Grafo).ToString());
             else
                 context.Response.SendResponse(HttpStatusCode.NotFound);
 
@@ -471,21 +488,21 @@ namespace TeoriaDosGrafos.API
                     int liOrigem = Convert.ToInt32(loArgs["origem"]);
                     int liDestino = Convert.ToInt32(loArgs["destino"]);
                     int liPeso = Convert.ToInt32(loArgs["peso"]);
-                    
+
                     if (APIUtil.FindVerticeByID(liOrigem, loCliente.Grafo) != null && APIUtil.FindVerticeByID(liDestino, loCliente.Grafo) != null)
                     {
                         loCliente.Grafo.Arestas.Add(new Aresta(liOrigem, liDestino, liPeso));
                         context.Response.SendResponse(HttpStatusCode.Ok);
                     }
-                    else                    
-                        context.Response.SendResponse(HttpStatusCode.NotFound);                    
+                    else
+                        context.Response.SendResponse(HttpStatusCode.NotFound);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     Servidor.Server.Logger.Error(ex.Message);
                     context.Response.SendResponse(HttpStatusCode.BadRequest);
                 }
-            }            
+            }
             return context;
         }
 
@@ -510,7 +527,7 @@ namespace TeoriaDosGrafos.API
                 {
                     int liVertice1 = Convert.ToInt32(loArgs["vertice1"]);
                     int liVertice2 = Convert.ToInt32(loArgs["vertice2"]);
-                    
+
                     if (APIUtil.FindVerticeByID(liVertice1, loCliente.Grafo) != null && APIUtil.FindVerticeByID(liVertice2, loCliente.Grafo) != null)
                     {
                         List<Aresta> loListaArestas = APIUtil.FindArestasByVerticesIDs(liVertice1, liVertice2, loCliente.Grafo);
@@ -527,139 +544,6 @@ namespace TeoriaDosGrafos.API
                 }
             }
             return context;
-        }
-        #endregion
-
-        #region Algoritmos
-
-        public static void Warshall(Grafo aoGrafo, int verticesCount)
-        {
-            int[,] loMatriz = new int[aoGrafo.Vertices.Count, aoGrafo.Vertices.Count];
-
-            for (int k = 0; k < verticesCount; ++k)
-            {
-                for (int i = 0; i < verticesCount; ++i)
-                {
-                    for (int j = 0; j < verticesCount; ++j)
-                    {
-                        loMatriz[i, j] = loMatriz[i, j] && (loMatriz[i, k + 1] || loMatriz[i + 1, k]);
-                     }
-                }
-            }
-        }
-
-
-        public static int[,] FloydWarshall(int[,] graph, int verticesCount)
-        {
-            int[,] distance = new int[verticesCount, verticesCount];
-
-            for (int i = 0; i < verticesCount; ++i)
-                for (int j = 0; j < verticesCount; ++j)
-                    distance[i, j] = graph[i, j];
-
-            for (int k = 0; k < verticesCount; ++k)
-            {
-                for (int i = 0; i < verticesCount; ++i)
-                {
-                    for (int j = 0; j < verticesCount; ++j)
-                    {
-                        if (distance[i, k] + distance[k, j] < distance[i, j])
-                            distance[i, j] = distance[i, k] + distance[k, j];
-                    }
-                }
-            }
-            return distance;            
-        }
-
-        private static void PrintFloydWarshall(int[,] distance, int verticesCount)
-        {
-            Console.WriteLine("Shortest distances between every pair of vertices:");
-
-            for (int i = 0; i < verticesCount; ++i)
-            {
-                for (int j = 0; j < verticesCount; ++j)
-                {
-                    if (distance[i, j] == INF)
-                        Console.Write("INF".PadLeft(7));
-                    else
-                        Console.Write(distance[i, j].ToString().PadLeft(7));
-                }
-
-                Console.WriteLine();
-            }
-        }
-
-        public static void BellmanFord(Graph graph, int source)
-        {
-            int verticesCount = graph.VerticesCount;
-            int edgesCount = graph.EdgesCount;
-            int[] distance = new int[verticesCount];
-
-            for (int i = 0; i < verticesCount; i++)
-                distance[i] = int.MaxValue;
-
-            distance[source] = 0;
-
-            for (int i = 1; i <= verticesCount - 1; ++i)
-            {
-                for (int j = 0; j < edgesCount; ++j)
-                {
-                    int u = graph.edge[j].Source;
-                    int v = graph.edge[j].Destination;
-                    int weight = graph.edge[j].Weight;
-
-                    if (distance[u] != int.MaxValue && distance[u] + weight < distance[v])
-                        distance[v] = distance[u] + weight;
-                }
-            }
-
-            for (int i = 0; i < edgesCount; ++i)
-            {
-                int u = graph.edge[i].Source;
-                int v = graph.edge[i].Destination;
-                int weight = graph.edge[i].Weight;
-
-                if (distance[u] != int.MaxValue && distance[u] + weight < distance[v])
-                    Console.WriteLine("Graph contains negative weight cycle.");
-            }
-
-            PrintBellmanFord(distance, verticesCount);
-        }
-
-        private static void PrintBellmanFord(int[] distance, int verticesCount)
-        {
-            throw new NotImplementedException();
-        }
-
-        public static void Dijkstra(int[,] graph, int source, int verticesCount)
-        {
-            int[] distance = new int[verticesCount];
-            bool[] shortestPathTreeSet = new bool[verticesCount];
-
-            for (int i = 0; i < verticesCount; ++i)
-            {
-                distance[i] = int.MaxValue;
-                shortestPathTreeSet[i] = false;
-            }
-
-            distance[source] = 0;
-
-            for (int count = 0; count < verticesCount - 1; ++count)
-            {
-                int u = MinimumDistance(distance, shortestPathTreeSet, verticesCount);
-                shortestPathTreeSet[u] = true;
-
-                for (int v = 0; v < verticesCount; ++v)
-                    if (!shortestPathTreeSet[v] && Convert.ToBoolean(graph[u, v]) && distance[u] != int.MaxValue && distance[u] + graph[u, v] < distance[v])
-                        distance[v] = distance[u] + graph[u, v];
-            }
-
-            PrintDijkstra(distance, verticesCount);
-        }
-
-        private static void PrintDijkstra(int[] distance, int verticesCount)
-        {
-            throw new NotImplementedException();
         }
         #endregion
     }
