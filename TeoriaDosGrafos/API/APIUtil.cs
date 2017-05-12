@@ -122,8 +122,7 @@ namespace TeoriaDosGrafos.API
         public static int[,] GetMatrizAcessibilidade(Grafo aoGrafo)
         {
             int[,] loMatriz = GetMatrizAdjacencia(aoGrafo);
-
-            bool[,] loMatrizBool = (bool[,])ConverteMatriz(loMatriz);
+            bool[,] loMatrizBool = (bool[,])ConverteMatriz(loMatriz, aoGrafo.Vertices.Count);
 
             //Algoritmo de Warshall
             for (int k = 0; k < aoGrafo.Vertices.Count; ++k)
@@ -135,7 +134,38 @@ namespace TeoriaDosGrafos.API
                 }
             }
 
-            return (int[,])ConverteMatriz(loMatrizBool);
+            return (int[,])ConverteMatriz(loMatrizBool, aoGrafo.Vertices.Count);
+        }
+
+        /// <summary>
+        /// Gera matriz de adjacência.
+        /// </summary>
+        /// <param name="aoGrafo"></param>
+        /// <returns></returns>
+        public static int[,] GetMatrizAdjacenciaPeso(Grafo aoGrafo)
+        {
+            int[,] loMatriz = new int[aoGrafo.Vertices.Count, aoGrafo.Vertices.Count];
+
+            int i, j;
+            i = 0;
+
+            foreach (Vertice loVertice in aoGrafo.Vertices)
+            {
+                j = 0;
+
+                foreach (Vertice loVertice2 in aoGrafo.Vertices)
+                {
+                    List<Aresta> loListaArestas = APIUtil.FindArestasByVerticesIDs(loVertice.ID, loVertice2.ID, aoGrafo).OrderBy(a => a.Peso).Cast<Aresta>().ToList();
+                    Aresta loMenorAresta = (loListaArestas.Count != 0) ? loListaArestas[0] : null;
+
+                    loMatriz[i, j] = (loMenorAresta != null) ? loMenorAresta.Peso : -1;
+
+                    j++;
+                }
+                i++;
+            }
+
+            return loMatriz;
         }
 
         /// <summary>
@@ -156,11 +186,7 @@ namespace TeoriaDosGrafos.API
 
                 foreach (Vertice loVertice2 in aoGrafo.Vertices)
                 {
-                    if (APIUtil.FindArestasByVerticesIDs(loVertice.ID, loVertice2.ID, aoGrafo).Count > 0)
-                        loMatriz[i, j] = 1;
-                    else
-                        loMatriz[i, j] = 0;
-
+                    loMatriz[i, j] = (APIUtil.FindArestasByVerticesIDs(loVertice.ID, loVertice2.ID, aoGrafo).Count > 0) ? 1 : 0;
                     j++;
                 }
                 i++;
@@ -168,7 +194,6 @@ namespace TeoriaDosGrafos.API
 
             return loMatriz;
         }
-
 
         #endregion
 
@@ -466,47 +491,47 @@ namespace TeoriaDosGrafos.API
             }
         }
 
-        public static void BellmanFord(Grafo graph, int source)
-        {
-            int verticesCount = graph.VerticesCount;
-            int edgesCount = graph.EdgesCount;
-            int[] distance = new int[verticesCount];
+        //public static void BellmanFord(Grafo graph, int source)
+        //{
+        //    int verticesCount = graph.VerticesCount;
+        //    int edgesCount = graph.EdgesCount;
+        //    int[] distance = new int[verticesCount];
 
-            for (int i = 0; i < verticesCount; i++)
-                distance[i] = int.MaxValue;
+        //    for (int i = 0; i < verticesCount; i++)
+        //        distance[i] = int.MaxValue;
 
-            distance[source] = 0;
+        //    distance[source] = 0;
 
-            for (int i = 1; i <= verticesCount - 1; ++i)
-            {
-                for (int j = 0; j < edgesCount; ++j)
-                {
-                    int u = graph.edge[j].Source;
-                    int v = graph.edge[j].Destination;
-                    int weight = graph.edge[j].Weight;
+        //    for (int i = 1; i <= verticesCount - 1; ++i)
+        //    {
+        //        for (int j = 0; j < edgesCount; ++j)
+        //        {
+        //            int u = graph.edge[j].Source;
+        //            int v = graph.edge[j].Destination;
+        //            int weight = graph.edge[j].Weight;
 
-                    if (distance[u] != int.MaxValue && distance[u] + weight < distance[v])
-                        distance[v] = distance[u] + weight;
-                }
-            }
+        //            if (distance[u] != int.MaxValue && distance[u] + weight < distance[v])
+        //                distance[v] = distance[u] + weight;
+        //        }
+        //    }
 
-            for (int i = 0; i < edgesCount; ++i)
-            {
-                int u = graph.edge[i].Source;
-                int v = graph.edge[i].Destination;
-                int weight = graph.edge[i].Weight;
+        //    for (int i = 0; i < edgesCount; ++i)
+        //    {
+        //        int u = graph.edge[i].Source;
+        //        int v = graph.edge[i].Destination;
+        //        int weight = graph.edge[i].Weight;
 
-                if (distance[u] != int.MaxValue && distance[u] + weight < distance[v])
-                    Console.WriteLine("Graph contains negative weight cycle.");
-            }
+        //        if (distance[u] != int.MaxValue && distance[u] + weight < distance[v])
+        //            Console.WriteLine("Graph contains negative weight cycle.");
+        //    }
 
-            PrintBellmanFord(distance, verticesCount);
-        }
+        //    PrintBellmanFord(distance, verticesCount);
+        //}
 
-        private static void PrintBellmanFord(int[] distance, int verticesCount)
-        {
-            throw new NotImplementedException();
-        }
+        //private static void PrintBellmanFord(int[] distance, int verticesCount)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
         public static void Dijkstra(int[,] graph, int source, int verticesCount)
         {
