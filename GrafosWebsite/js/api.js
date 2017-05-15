@@ -158,6 +158,12 @@ var api = {
                 changePage('#matrizDeAdjacencia');
             });
         },
+        //menorCaminho: function () {
+        //    rest.get('api/grafo/menorCaminhoFloydWar', function (data, status, request) {
+        //        $('#menorCaminhoFloydWar').find('.placeholder').(data);
+        //        changePage('#menorCaminhoFloydWar');
+        //    });
+        //},
         grau: function () {
             rest.get('api/grafo/grau', function (data, status, request) {
                 $('#grau-maximo').find('h2').text(data[2].NumGrau);

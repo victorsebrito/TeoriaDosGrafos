@@ -13,6 +13,7 @@ namespace TeoriaDosGrafos.API
 {
     public static class APIUtil
     {
+        public const int INF = 99999;
         #region Grafos
 
         /// <summary>
@@ -54,6 +55,10 @@ namespace TeoriaDosGrafos.API
                 return null;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="aoContext"></param>
         public static void UpdateClientes(IHttpContext aoContext)
         {
             if (GetCliente(aoContext) != null)
@@ -191,8 +196,29 @@ namespace TeoriaDosGrafos.API
                 }
                 i++;
             }
-
             return loMatriz;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="aoGrafo"></param>
+        /// <returns></returns>
+        public static int[,] GetMenorCaminhoFloydWar(Grafo aoGrafo)
+        {
+            int[,] loMatriz = GetMatrizAdjacenciaPeso(aoGrafo);
+            int[,] loMenorCaminho = FloydWarshall(loMatriz, aoGrafo.Vertices.Count);           
+
+            return loMenorCaminho;
+        }
+
+        public static int[] GetMenorCaminhoDijkstra(Grafo aoGrafo, Vertice aoSource)
+        {
+            int[,] loMatriz = GetMatrizAdjacenciaPeso(aoGrafo);
+            
+            int[] loMenorCaminho = Dijkstra(loMatriz, aoSource.ID, aoGrafo.Vertices.Count);
+
+            return loMenorCaminho;
         }
 
         #endregion
@@ -436,21 +462,7 @@ namespace TeoriaDosGrafos.API
 
         #endregion
 
-
-        /// <summary>
-        /// Transforma a query string do contexto ("var1=a&var2=b") em dicionário.
-        /// </summary>
-        /// <param name="context"></param>
-        /// <returns></returns>
-        public static Dictionary<string, string> GetDictionaryFromContext(IHttpContext context)
-        {
-            HttpRequest loRequest = (HttpRequest)context.Request;
-
-            string lsBody = new StreamReader(loRequest.Advanced.InputStream, context.Request.ContentEncoding).ReadToEnd();
-            NameValueCollection loNVC = System.Web.HttpUtility.ParseQueryString(lsBody);
-            return loNVC.AllKeys.ToDictionary(k => k, k => loNVC[k]);
-        }
-
+        #region Algoritmos
         public static int[,] FloydWarshall(int[,] graph, int verticesCount)
         {
             int[,] distance = new int[verticesCount, verticesCount];
@@ -473,6 +485,7 @@ namespace TeoriaDosGrafos.API
             return distance;
         }
 
+
         private static void PrintFloydWarshall(int[,] distance, int verticesCount)
         {
             Console.WriteLine("Shortest distances between every pair of vertices:");
@@ -481,7 +494,7 @@ namespace TeoriaDosGrafos.API
             {
                 for (int j = 0; j < verticesCount; ++j)
                 {
-                    if (distance[i, j] == 9999999)
+                    if (distance[i, j] == INF)
                         Console.Write("INF".PadLeft(7));
                     else
                         Console.Write(distance[i, j].ToString().PadLeft(7));
@@ -533,7 +546,7 @@ namespace TeoriaDosGrafos.API
         //    throw new NotImplementedException();
         //}
 
-        public static void Dijkstra(int[,] graph, int source, int verticesCount)
+        public static int[] Dijkstra(int[,] graph, int source, int verticesCount)
         {
             int[] distance = new int[verticesCount];
             bool[] shortestPathTreeSet = new bool[verticesCount];
@@ -556,14 +569,44 @@ namespace TeoriaDosGrafos.API
                         distance[v] = distance[u] + graph[u, v];
             }
 
-            PrintDijkstra(distance, verticesCount);
+            return distance;
         }
 
+        private static int MinimumDistance(int[] distance, bool[] shortestPathTreeSet, int verticesCount)
+        {
+            int min = int.MaxValue;
+            int minIndex = 0;
+
+            for (int v = 0; v < verticesCount; ++v)
+            {
+                if (shortestPathTreeSet[v] == false && distance[v] <= min)
+                {
+                    min = distance[v];
+                    minIndex = v;
+                }
+            }
+
+            return minIndex;
+        }
         private static void PrintDijkstra(int[] distance, int verticesCount)
         {
             throw new NotImplementedException();
         }
+        #endregion
 
+        /// <summary>
+        /// Transforma a query string do contexto ("var1=a&var2=b") em dicionário.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public static Dictionary<string, string> GetDictionaryFromContext(IHttpContext context)
+        {
+            HttpRequest loRequest = (HttpRequest)context.Request;
+
+            string lsBody = new StreamReader(loRequest.Advanced.InputStream, context.Request.ContentEncoding).ReadToEnd();
+            NameValueCollection loNVC = System.Web.HttpUtility.ParseQueryString(lsBody);
+            return loNVC.AllKeys.ToDictionary(k => k, k => loNVC[k]);
+        }
     }
 }
 

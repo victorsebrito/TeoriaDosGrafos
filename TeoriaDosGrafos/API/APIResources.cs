@@ -107,16 +107,53 @@ namespace TeoriaDosGrafos.API
         /// </summary>
         /// <param name="aoGrafo"></param>
         /// <returns></returns>
-        [RestRoute(HttpMethod = HttpMethod.GET, PathInfo = "api/grafo/matrizAce")]
-        public IHttpContext GetMatrizAcessibilidade(IHttpContext context)
+        [RestRoute(HttpMethod = HttpMethod.GET, PathInfo = "api/grafo/menorCaminhoFloydWar")]
+        public IHttpContext GetMenorCaminhoFloydWar(IHttpContext context)
         {
             APIUtil.UpdateClientes(context);
-            IHttpContext contextGrafo = GetGrafo(context);
+            Cliente loCliente = APIUtil.ValidarCliente(context);
+            int[,] distance = new int[loCliente.Grafo.Vertices.Count, loCliente.Grafo.Vertices.Count];
+
+            APIUtil.GetMenorCaminhoFloydWar(loCliente.Grafo);
+
+            for (int i = 0; i < loCliente.Grafo.Vertices.Count; ++i)
+            {
+                for (int j = 0; j < loCliente.Grafo.Vertices.Count; ++j)
+                {
+                    int INF = 99999;
+                    if (distance[i, j] == INF)
+                        Console.Write("INF".PadLeft(7));
+                    else
+                        Console.Write(distance[i, j].ToString().PadLeft(7));
+                }
+
+                Console.WriteLine();
+            }
 
 
             context.Response.ContentType = ContentType.JSON;
             context.Response.ContentEncoding = Encoding.UTF8;
-            context.Response.SendResponse(JsonConvert.SerializeObject());
+            context.Response.SendResponse(JsonConvert.SerializeObject(loCliente));
+
+            return context;
+        }
+
+        /// Gera matriz de acessibilidade.
+        /// </summary>
+        /// <param name="aoGrafo"></param>
+        /// <returns></returns>
+        [RestRoute(HttpMethod = HttpMethod.GET, PathInfo = "api/grafo/matrizAce")]
+        public IHttpContext GetMatrizAcessibilidade(IHttpContext context)
+        {
+            APIUtil.UpdateClientes(context);
+            Cliente loCliente = APIUtil.ValidarCliente(context);
+
+            APIUtil.GetMatrizAcessibilidade(loCliente.Grafo);
+
+
+            context.Response.ContentType = ContentType.JSON;
+            context.Response.ContentEncoding = Encoding.UTF8;
+            context.Response.SendResponse(JsonConvert.SerializeObject(loCliente));
 
             return context;
         }
