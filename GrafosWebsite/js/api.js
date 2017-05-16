@@ -158,10 +158,10 @@ var api = {
                 changePage('#matrizDeAdjacencia');
             });
         },
-        matrizAce: function () {
-            rest.get('api/grafo/matrizAce', function (data, status, request) {
-                $('#matrizAce').find('.placeholder').html(data);
-                changePage('#matrizAce');
+        matrizAcessibilidade: function () {
+            rest.get('api/grafo/matriz/acessibilidade', function (data, status, request) {
+                $('#matrizAcessibilidade').find('.placeholder').html(data);
+                changePage('#matrizAcessibilidade');
             });
         },
         menorCaminhoFloydWarshall: function () {

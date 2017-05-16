@@ -65,40 +65,29 @@ namespace TeoriaDosGrafos.API
             Cliente loCliente = APIUtil.ValidarCliente(context);
             if (context.WasRespondedTo) return context;
 
-            StringBuilder loBuilder = new StringBuilder();
-            loBuilder.Append("<table class=\"table table-bordered text-center\">");
-
-            loBuilder.Append("<tr><th></th>");
-            foreach (Vertice loVertice in loCliente.Grafo.Vertices)
-                loBuilder.Append(String.Format("<th>{0} ({1})</th>", loVertice.ID, loVertice.Nome));
-            loBuilder.Append("</tr>");
-
-            int i, j;
-            i = 0;
-            foreach (Vertice loVertice in loCliente.Grafo.Vertices)
-            {
-                j = 0;
-
-                loBuilder.Append("<tr>");
-                loBuilder.Append(String.Format("<th>{0} ({1})</th>", loVertice.ID, loVertice.Nome));
-
-                foreach (Vertice loVertice2 in loCliente.Grafo.Vertices)
-                {
-                    loBuilder.Append("<td>");
-                    loBuilder.Append((APIUtil.FindArestasByVerticesIDs(loVertice.ID, loVertice2.ID, loCliente.Grafo).Count > 0) ? 1 : 0);
-                    loBuilder.Append("</td>");
-                    j++;
-                }
-                i++;
-
-                loBuilder.Append("</tr>");
-            }
-
-            loBuilder.Append("</table>");
+            string lsHtml = APIUtil.GetMatrizHTML(loCliente.Grafo.Vertices, APIUtil.GetMatrizAdjacencia(loCliente.Grafo));
 
             context.Response.ContentType = ContentType.HTML;
             context.Response.ContentEncoding = Encoding.UTF8;
-            context.Response.SendResponse(loBuilder.ToString());
+            context.Response.SendResponse(lsHtml);
+
+            return context;
+        }
+
+        /// <summary>
+        /// Retorna a matriz de acessibilidade.
+        /// </summary>
+        [RestRoute(HttpMethod = HttpMethod.GET, PathInfo = "api/grafo/matriz/acessibilidade")]
+        public IHttpContext GetMatrizAcessibilidade(IHttpContext context)
+        {
+            APIUtil.UpdateClientes(context);
+            Cliente loCliente = APIUtil.ValidarCliente(context);
+
+            string lsHtml = APIUtil.GetMatrizHTML(loCliente.Grafo.Vertices, APIUtil.GetMatrizAcessibilidade(loCliente.Grafo));
+
+            context.Response.ContentType = ContentType.HTML;
+            context.Response.ContentEncoding = Encoding.UTF8;
+            context.Response.SendResponse(lsHtml);
 
             return context;
         }
@@ -133,25 +122,6 @@ namespace TeoriaDosGrafos.API
             context.Response.ContentType = ContentType.JSON;
             context.Response.ContentEncoding = Encoding.UTF8;
             //context.Response.SendResponse(JsonConvert.SerializeObject( ));
-
-            return context;
-        }
-
-        /// Gera matriz de acessibilidade.
-        /// </summary>
-        /// <param name="aoGrafo"></param>
-        /// <returns></returns>
-        [RestRoute(HttpMethod = HttpMethod.GET, PathInfo = "api/grafo/matrizAce")]
-        public IHttpContext GetMatrizAcessibilidade(IHttpContext context)
-        {
-            APIUtil.UpdateClientes(context);
-            Cliente loCliente = APIUtil.ValidarCliente(context);
-
-            APIUtil.GetMatrizAcessibilidade(loCliente.Grafo);
-            
-            context.Response.ContentType = ContentType.JSON;
-            context.Response.ContentEncoding = Encoding.UTF8;
-            context.Response.SendResponse(JsonConvert.SerializeObject(loCliente));
 
             return context;
         }

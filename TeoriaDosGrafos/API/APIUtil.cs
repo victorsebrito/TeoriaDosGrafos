@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
+using System.Text;
 using TeoriaDosGrafos.Classes;
 
 namespace TeoriaDosGrafos.API
@@ -76,6 +77,43 @@ namespace TeoriaDosGrafos.API
 
         }
 
+        public static string GetMatrizHTML(List<Vertice> aoVertices, int[,] aoMatriz)
+        {
+            StringBuilder loBuilder = new StringBuilder();
+            loBuilder.Append("<table class=\"table table-bordered text-center\">");
+            loBuilder.Append("<tr><th></th>");
+
+            foreach (Vertice loVertice in aoVertices)
+                loBuilder.Append(String.Format("<th>{0} ({1})</th>", loVertice.ID, loVertice.Nome));
+
+            loBuilder.Append("</tr>");
+
+            int i, j;
+            i = 0;
+            foreach (Vertice loVertice in aoVertices)
+            {
+                j = 0;
+
+                loBuilder.Append("<tr>");
+                loBuilder.Append(String.Format("<th>{0} ({1})</th>", loVertice.ID, loVertice.Nome));
+
+                foreach (Vertice loVertice2 in aoVertices)
+                {
+                    loBuilder.Append("<td>");
+                    loBuilder.Append(aoMatriz[i,j]);
+                    loBuilder.Append("</td>");
+                    j++;
+                }
+                i++;
+
+                loBuilder.Append("</tr>");
+            }
+
+            loBuilder.Append("</table>");
+
+            return loBuilder.ToString();
+        }
+
         /// <summary>
         /// Gera matriz booleana
         /// </summary>
@@ -106,12 +144,7 @@ namespace TeoriaDosGrafos.API
                 for (int i = 0; i < aiVerticesCount; i++)
                 {
                     for (int j = 0; j < aiVerticesCount; j++)
-                    {
-                        if (loMatrizB[i, j])
-                            loMatrizI[i, j] = 1;
-                        else
-                            loMatrizI[i, j] = 0;
-                    }
+                        loMatrizI[i, j] = (loMatrizB[i, j]) ? 1 : 0;
                 }
 
                 return loMatrizI;
@@ -135,7 +168,7 @@ namespace TeoriaDosGrafos.API
                 for (int i = 0; i < aoGrafo.Vertices.Count; ++i)
                 {
                     for (int j = 0; j < aoGrafo.Vertices.Count; ++j)
-                        loMatrizBool[i, j] = loMatrizBool[i, j] && (loMatrizBool[i, k] || loMatrizBool[i, k]);
+                        loMatrizBool[i, j] = loMatrizBool[i, j] || (loMatrizBool[i, k] && loMatrizBool[k, j]);
                 }
             }
 
