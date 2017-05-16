@@ -51,11 +51,12 @@
                         <button class="btn btn-default" onclick="api.grafo.ver();">Ver Grafo</button>
                         <button class="btn btn-default" onclick="api.grafo.get();">Ler Grafo</button>
                         <button class="btn btn-default" onclick="api.grafo.matriz();">Matriz de Adjacência</button>
-                        <button class="btn btn-default" onclick="api.grafo.);">Matriz de Acessibilidade</button>
+                        <button class="btn btn-default" onclick="api.grafo.matrizAce()">Matriz de Acessibilidade</button>
+                        <button class="btn btn-default" onclick="api.grafo.menorCaminhoDij()">Matriz de Acessibilidade</button>
                         <button class="btn btn-default" onclick="api.grafo.grau();">Grau do Grafo</button>
                         <button class="btn btn-default" onclick="api.grafo.conexo();">É Conexo?</button>
                         <button class="btn btn-default" onclick="api.grafo.euler();">Possui caminho de Euler?</button>
-                        
+
                     </div>
                     <div class="grupo-funcoes">
                         <h4>Vértices</h4>
@@ -185,10 +186,22 @@
                     <h1>Matriz de Adjacência</h1>
                     <div class="placeholder"></div>
                 </div>
-                <!--<div class="well page" id="menorCaminhoFloydWar">
-                    <h1>Menor Caminho</h1>
+                <div class="well page" id="matrizAce">
+                    <h1>Matriz de Acessibilidade</h1>
                     <div class="placeholder"></div>
-                </div>-->
+                </div>
+                <div class="well page" id="menorCaminhoFW">
+                    <h1>Menor Caminho Floyd-Warshall</h1>
+                    <div class="placeholder"></div>
+                </div>
+                <div class="well page" id="menorCaminhoDij">
+                    <h1>Menor Caminho Dijkstra</h1>
+                    <div class="placeholder"></div>
+                </div>
+                <div class="well page" id="menorCaminhoBF">
+                    <h1>Menor Caminho Bellman-Ford</h1>
+                    <div class="placeholder"></div>
+                </div>
                 <div class="well page" id="verGrau">
                     <h1>Grau do Grafo</h1>
                     <div class="item-grau" id="grau-maximo">

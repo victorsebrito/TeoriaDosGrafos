@@ -211,15 +211,42 @@ namespace TeoriaDosGrafos.API
 
             return loMenorCaminho;
         }
-
-        public static int[] GetMenorCaminhoDijkstra(Grafo aoGrafo, Vertice aoSource)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="aoGrafo"></param>
+        /// <param name="sourceID"></param>
+        /// <returns></returns>
+        public static int[] GetMenorCaminhoDijkstra(Grafo aoGrafo, int sourceID)
         {
             int[,] loMatriz = GetMatrizAdjacenciaPeso(aoGrafo);
-            
-            int[] loMenorCaminho = Dijkstra(loMatriz, aoSource.ID, aoGrafo.Vertices.Count);
+            Vertice vertice = FindVerticeByID(sourceID, aoGrafo);
 
+            int[] loMenorCaminho = Dijkstra(loMatriz, vertice.ID, aoGrafo.Vertices.Count);
+                       
             return loMenorCaminho;
         }
+
+        /// <summary>
+        /// Recebe matriz de pesos e retorna menor caminho
+        /// </summary>
+        /// <param name="aoGrafo"></param>
+        /// <param name="sourceID"></param>
+        /// <returns></returns>
+        public static int[] GetMenorCaminhoBellmanFord(Grafo aoGrafo, int sourceID)
+        {
+            int[,] loMatriz = GetMatrizAdjacenciaPeso(aoGrafo);
+            Vertice vertice = FindVerticeByID(sourceID, aoGrafo);
+
+            int[] loMenorCaminho = BellmanFord(aoGrafo, vertice.ID);
+
+            for(int i = 0; i < aoGrafo.Vertices.Count;i++)            
+                Console.Write(loMenorCaminho[i]);
+            
+            return loMenorCaminho;
+        }
+
+
 
         #endregion
 
@@ -484,67 +511,53 @@ namespace TeoriaDosGrafos.API
             }
             return distance;
         }
+                
 
-
-        private static void PrintFloydWarshall(int[,] distance, int verticesCount)
+        public static int[] BellmanFord(Grafo aoGrafo, int sourceID)
         {
-            Console.WriteLine("Shortest distances between every pair of vertices:");
+            int verticesCount = aoGrafo.Vertices.Count;
+            int edgesCount = aoGrafo.Arestas.Count;
+            int[] distance = new int[verticesCount];
 
-            for (int i = 0; i < verticesCount; ++i)
+            for (int i = 0; i < verticesCount; i++)
+                distance[i] = int.MaxValue;
+
+            distance[sourceID] = 0;
+
+            for (int i = 1; i <= verticesCount - 1; ++i)
             {
-                for (int j = 0; j < verticesCount; ++j)
+                for (int j = 0; j < edgesCount; ++j)
                 {
-                    if (distance[i, j] == INF)
-                        Console.Write("INF".PadLeft(7));
-                    else
-                        Console.Write(distance[i, j].ToString().PadLeft(7));
-                }
+                    int u = aoGrafo.Arestas[j].Origem;
+                    int v = aoGrafo.Arestas[j].Destino;
+                    int weight = aoGrafo.Arestas[j].Peso;
 
-                Console.WriteLine();
+                    if (distance[u] != int.MaxValue && distance[u] + weight < distance[v])
+                        distance[v] = distance[u] + weight;
+                }
             }
+
+            for (int i = 0; i < edgesCount; ++i)
+            {
+                int u = aoGrafo.Arestas[i].Origem;
+                int v = aoGrafo.Arestas[i].Destino;
+                int weight = aoGrafo.Arestas[i].Peso;
+
+                if (distance[u] != int.MaxValue && distance[u] + weight < distance[v])
+                    Console.WriteLine("Graph contains negative weight cycle.");
+            }
+            return distance;
+
+            //PrintBellmanFord(distance, verticesCount);
         }
 
-        //public static void BellmanFord(Grafo graph, int source)
-        //{
-        //    int verticesCount = graph.VerticesCount;
-        //    int edgesCount = graph.EdgesCount;
-        //    int[] distance = new int[verticesCount];
+        private static void PrintBellmanFord(int[] distance, int verticesCount)
+        {
+            Console.WriteLine("Vertex   Distance from source");
 
-        //    for (int i = 0; i < verticesCount; i++)
-        //        distance[i] = int.MaxValue;
-
-        //    distance[source] = 0;
-
-        //    for (int i = 1; i <= verticesCount - 1; ++i)
-        //    {
-        //        for (int j = 0; j < edgesCount; ++j)
-        //        {
-        //            int u = graph.edge[j].Source;
-        //            int v = graph.edge[j].Destination;
-        //            int weight = graph.edge[j].Weight;
-
-        //            if (distance[u] != int.MaxValue && distance[u] + weight < distance[v])
-        //                distance[v] = distance[u] + weight;
-        //        }
-        //    }
-
-        //    for (int i = 0; i < edgesCount; ++i)
-        //    {
-        //        int u = graph.edge[i].Source;
-        //        int v = graph.edge[i].Destination;
-        //        int weight = graph.edge[i].Weight;
-
-        //        if (distance[u] != int.MaxValue && distance[u] + weight < distance[v])
-        //            Console.WriteLine("Graph contains negative weight cycle.");
-        //    }
-
-        //    PrintBellmanFord(distance, verticesCount);
-        //}
-
-        //private static void PrintBellmanFord(int[] distance, int verticesCount)
-        //{
-        //    throw new NotImplementedException();
-        //}
+            for (int i = 0; i < verticesCount; ++i)
+                Console.WriteLine("{0}\t {1}", i, distance[i]);
+        }
 
         public static int[] Dijkstra(int[,] graph, int source, int verticesCount)
         {
@@ -588,10 +601,11 @@ namespace TeoriaDosGrafos.API
 
             return minIndex;
         }
-        private static void PrintDijkstra(int[] distance, int verticesCount)
+        public static int[] Floyd(Grafo aoGrafo)
         {
-            throw new NotImplementedException();
+            //ToDo
         }
+
         #endregion
 
         /// <summary>

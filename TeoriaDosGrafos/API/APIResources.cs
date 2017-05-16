@@ -130,10 +130,9 @@ namespace TeoriaDosGrafos.API
                 Console.WriteLine();
             }
 
-
             context.Response.ContentType = ContentType.JSON;
             context.Response.ContentEncoding = Encoding.UTF8;
-            context.Response.SendResponse(JsonConvert.SerializeObject(loCliente));
+            //context.Response.SendResponse(JsonConvert.SerializeObject( ));
 
             return context;
         }
@@ -149,7 +148,58 @@ namespace TeoriaDosGrafos.API
             Cliente loCliente = APIUtil.ValidarCliente(context);
 
             APIUtil.GetMatrizAcessibilidade(loCliente.Grafo);
+            
+            context.Response.ContentType = ContentType.JSON;
+            context.Response.ContentEncoding = Encoding.UTF8;
+            context.Response.SendResponse(JsonConvert.SerializeObject(loCliente));
 
+            return context;
+        }
+
+        /// <summary>
+        /// Retorna o menor caminho através do grafo e vértice fonte.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        [RestRoute(HttpMethod = HttpMethod.GET, PathInfo = "api/grafo/menorCaminhoDij")]
+        public IHttpContext GetMenorCaminhoDijkstra(IHttpContext context)
+        {
+            Dictionary<string, string> loArgs = APIUtil.GetDictionaryFromContext(context);
+            APIUtil.UpdateClientes(context);
+            Cliente loCliente = APIUtil.ValidarCliente(context);
+
+            int liID = Convert.ToInt32(loArgs["id"]);
+
+            Vertice loVertice = APIUtil.FindVerticeByID(liID, loCliente.Grafo);                        
+
+            int[] loMenorCaminho = APIUtil.GetMenorCaminhoDijkstra(loCliente.Grafo, loVertice.ID);
+
+            for (int i = 0; i < loCliente.Grafo.Vertices.Count; i++)
+                Console.Write(loMenorCaminho[i]);
+
+            context.Response.ContentType = ContentType.JSON;
+            context.Response.ContentEncoding = Encoding.UTF8;
+            context.Response.SendResponse(JsonConvert.SerializeObject(loCliente));
+
+            return context;
+        }
+
+        /// <summary>
+        /// Retorna vetor com menor caminho através do grafo e o vértice origem.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        [RestRoute(HttpMethod = HttpMethod.GET, PathInfo = "api/grafo/menorCaminhoBF")]
+        public IHttpContext GetMenorCaminhoBellmanFord(IHttpContext context)
+        {
+            Dictionary<string, string> loArgs = APIUtil.GetDictionaryFromContext(context);
+            APIUtil.UpdateClientes(context);
+            Cliente loCliente = APIUtil.ValidarCliente(context);
+
+            int liID = Convert.ToInt32(loArgs["id"]);
+
+            Vertice loVertice = APIUtil.FindVerticeByID(liID, loCliente.Grafo);
+            APIUtil.GetMenorCaminhoBellmanFord(loCliente.Grafo, loVertice.ID);
 
             context.Response.ContentType = ContentType.JSON;
             context.Response.ContentEncoding = Encoding.UTF8;

@@ -3,9 +3,9 @@ var host = 'http://localhost:1234/';
 
 $.ajaxSetup({
     beforeSend: function (request) {
-        if (grafoID != undefined)
+        if (grafoID !== undefined)
             request.setRequestHeader('X-Grafo-ID', grafoID);
-        else if (this.url != host + 'api/grafo' && this.type != 'POST')
+        else if (this.url !== host + 'api/grafo' && this.type !== 'POST')
             console.log("Not authorized");
     },
     error: function (data, status, request) {
@@ -128,7 +128,7 @@ var api = {
                         .on("end", dragended));
 
                 node.append("title")
-                    .text(function (d) { return ((d.id) + ((d.nome != undefined) ? ' (' + d.nome + ')' : '')); });
+                    .text(function (d) { return ((d.id) + ((d.nome !== undefined) ? ' (' + d.nome + ')' : '')); });
 
                 simulation
                     .nodes(graph.Vertices)
@@ -158,12 +158,31 @@ var api = {
                 changePage('#matrizDeAdjacencia');
             });
         },
-        //menorCaminho: function () {
-        //    rest.get('api/grafo/menorCaminhoFloydWar', function (data, status, request) {
-        //        $('#menorCaminhoFloydWar').find('.placeholder').(data);
-        //        changePage('#menorCaminhoFloydWar');
-        //    });
-        //},
+        matrizAce: function () {
+            rest.get('api/grafo/matrizAce', function (data, status, request) {
+                $('#matrizAce').find('.placeholder').html(data);
+                changePage('#matrizAce');
+            });
+        },
+        menorCaminhoFW: function () {
+            rest.get('api/grafo/menorCaminhoFloydWar', function (data, status, request) {
+                $('#menorCaminhoFW').find('.placeholder').html(data);
+                changePage('#menorCaminhoFW');
+            });
+        },
+        menorCaminhoDij: function () {
+            rest.get('api/grafo/menorCaminhoDij', function (data, status, request) {
+                $('#menorCaminhoDij').find('.placeholder').html(data);
+                changePage('#menorCaminhoDij');
+            });
+        },
+        menorCaminhoDij: function () {
+            rest.get('api/grafo/menorCaminhoBF', function (data, status, request) {
+                $('#menorCaminhoBF').find('.placeholder').html(data);
+                changePage('#menorCaminhoBF');
+            });
+        },
+
         grau: function () {
             rest.get('api/grafo/grau', function (data, status, request) {
                 $('#grau-maximo').find('h2').text(data[2].NumGrau);
@@ -180,7 +199,7 @@ var api = {
             rest.get('api/grafo/conexo', function (data, status, request) {
                 var icon = (data) ? 'check_circle' : 'cancel';
                 var color = (data) ? 'green' : 'red';
-                
+
                 $('#is-conexo-icon').text(icon);
                 $('#is-conexo-icon').css('color', color);
                 changePage('#isConexo');
@@ -195,7 +214,7 @@ var api = {
                 $('#possui-euler-icon').css('color', color);
                 changePage('#possuiEuler');
             });
-        },       
+        },
     },
 
     vertice: {
@@ -204,12 +223,12 @@ var api = {
                 alerta(true);
             });
         },
-        delete: function(data) {
+        delete: function (data) {
             rest.delete('api/vertice', data, function (data, status, request) {
                 alerta(true);
             });
         },
-        arestas: function(data) {
+        arestas: function (data) {
             rest.post('api/vertice/arestas', data, function (data, status, request) {
                 $pre = $('#arestasVertice').find('pre');
                 $pre.removeClass('prettyprinted');
@@ -254,6 +273,21 @@ var api = {
                 PR.prettyPrint();
                 $pre.show();
             });
+        }
+    },
+
+    tabela: {
+        function(linhas, colunas) {
+            linhas = 6;
+            colunas = 7;
+
+            for (var i = 0; i < rows; i++) {
+                $('table').append('<tr></tr>');
+                for (var j = 0; j < cols; j++) {
+                    $('table').find('tr').eq(i).append('<td></td>');
+                    $('table').find('tr').eq(i).find('td').eq(j).attr('data-row', i).attr('data-col', j);
+                }
+            }
         }
     }
 }
