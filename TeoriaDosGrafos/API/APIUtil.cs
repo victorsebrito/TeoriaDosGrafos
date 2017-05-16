@@ -85,11 +85,11 @@ namespace TeoriaDosGrafos.API
         {
             if (aoMatriz is int[,] loMatriz)
             {                
-                bool[,] loBoolMatriz = new bool[,] { };
+                bool[,] loBoolMatriz = new bool[aiVerticesCount, aiVerticesCount];
 
-                for (int i = 0; i < loMatriz.Length; i++)
+                for (int i = 0; i < aiVerticesCount; i++)
                 {
-                    for (int j = 0; j < loMatriz.Length; j++)
+                    for (int j = 0; j < aiVerticesCount; j++)
                     {
                         if (loMatriz[i, j] == 1)
                             loBoolMatriz[i, j] = true;
@@ -102,10 +102,10 @@ namespace TeoriaDosGrafos.API
             }
             else if (aoMatriz is bool[,] loMatrizB)
             {
-                int[,] loMatrizI = new int[,] { };
-                for (int i = 0; i < loMatrizB.Length; i++)
+                int[,] loMatrizI = new int[aiVerticesCount, aiVerticesCount];
+                for (int i = 0; i < aiVerticesCount; i++)
                 {
-                    for (int j = 0; j < loMatrizB.Length; j++)
+                    for (int j = 0; j < aiVerticesCount; j++)
                     {
                         if (loMatrizB[i, j])
                             loMatrizI[i, j] = 1;
@@ -204,7 +204,7 @@ namespace TeoriaDosGrafos.API
         /// </summary>
         /// <param name="aoGrafo"></param>
         /// <returns></returns>
-        public static int[,] GetMenorCaminhoFloydWar(Grafo aoGrafo)
+        public static int[,] GetMenorCaminhoFloydWarshall(Grafo aoGrafo)
         {
             int[,] loMatriz = GetMatrizAdjacenciaPeso(aoGrafo);
             int[,] loMenorCaminho = FloydWarshall(loMatriz, aoGrafo.Vertices.Count);           
@@ -601,7 +601,7 @@ namespace TeoriaDosGrafos.API
 
             return minIndex;
         }
-        public static int[] Floyd(Grafo aoGrafo)
+        public static void Floyd(Grafo aoGrafo)
         {
             //ToDo
         }

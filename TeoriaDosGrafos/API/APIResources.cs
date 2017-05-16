@@ -107,14 +107,14 @@ namespace TeoriaDosGrafos.API
         /// </summary>
         /// <param name="aoGrafo"></param>
         /// <returns></returns>
-        [RestRoute(HttpMethod = HttpMethod.GET, PathInfo = "api/grafo/menorCaminhoFloydWar")]
-        public IHttpContext GetMenorCaminhoFloydWar(IHttpContext context)
+        [RestRoute(HttpMethod = HttpMethod.GET, PathInfo = "api/grafo/menorCaminhoFloydWarshall")]
+        public IHttpContext GetMenorCaminhoFloydWarshall(IHttpContext context)
         {
             APIUtil.UpdateClientes(context);
             Cliente loCliente = APIUtil.ValidarCliente(context);
             int[,] distance = new int[loCliente.Grafo.Vertices.Count, loCliente.Grafo.Vertices.Count];
 
-            APIUtil.GetMenorCaminhoFloydWar(loCliente.Grafo);
+            APIUtil.GetMenorCaminhoFloydWarshall(loCliente.Grafo);
 
             for (int i = 0; i < loCliente.Grafo.Vertices.Count; ++i)
             {
@@ -161,7 +161,7 @@ namespace TeoriaDosGrafos.API
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        [RestRoute(HttpMethod = HttpMethod.GET, PathInfo = "api/grafo/menorCaminhoDij")]
+        [RestRoute(HttpMethod = HttpMethod.GET, PathInfo = "api/grafo/menorCaminhoDijkstra")]
         public IHttpContext GetMenorCaminhoDijkstra(IHttpContext context)
         {
             Dictionary<string, string> loArgs = APIUtil.GetDictionaryFromContext(context);

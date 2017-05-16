@@ -164,19 +164,19 @@ var api = {
                 changePage('#matrizAce');
             });
         },
-        menorCaminhoFW: function () {
-            rest.get('api/grafo/menorCaminhoFloydWar', function (data, status, request) {
-                $('#menorCaminhoFW').find('.placeholder').html(data);
-                changePage('#menorCaminhoFW');
+        menorCaminhoFloydWarshall: function () {
+            rest.get('api/grafo/menorCaminhoFloydWarshall', function (data, status, request) {
+                $('#menorCaminhoFloydWarshall').find('.placeholder').html(data);
+                changePage('#menorCaminhoFloydWarshall');
             });
         },
-        menorCaminhoDij: function () {
-            rest.get('api/grafo/menorCaminhoDij', function (data, status, request) {
-                $('#menorCaminhoDij').find('.placeholder').html(data);
-                changePage('#menorCaminhoDij');
+        menorCaminhoDijkstra: function () {
+            rest.get('api/grafo/menorCaminhoDijkstra', function (data, status, request) {
+                $('#menorCaminhoDijkstra').find('.placeholder').html(data);
+                changePage('#menorCaminhoDijkstra');
             });
         },
-        menorCaminhoDij: function () {
+        menorCaminhoBF: function () {
             rest.get('api/grafo/menorCaminhoBF', function (data, status, request) {
                 $('#menorCaminhoBF').find('.placeholder').html(data);
                 changePage('#menorCaminhoBF');
