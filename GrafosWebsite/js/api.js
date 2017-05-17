@@ -182,7 +182,6 @@ var api = {
                 changePage('#menorCaminhoBF');
             });
         },
-
         grau: function () {
             rest.get('api/grafo/grau', function (data, status, request) {
                 $('#grau-maximo').find('h2').text(data[2].NumGrau);

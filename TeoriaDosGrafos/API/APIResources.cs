@@ -101,9 +101,7 @@ namespace TeoriaDosGrafos.API
         {
             APIUtil.UpdateClientes(context);
             Cliente loCliente = APIUtil.ValidarCliente(context);
-            int[,] distance = new int[loCliente.Grafo.Vertices.Count, loCliente.Grafo.Vertices.Count];
-
-            APIUtil.GetMenorCaminhoFloydWarshall(loCliente.Grafo);
+            int[,] distance = APIUtil.GetMenorCaminhoFloydWarshall(loCliente.Grafo);
 
             for (int i = 0; i < loCliente.Grafo.Vertices.Count; ++i)
             {

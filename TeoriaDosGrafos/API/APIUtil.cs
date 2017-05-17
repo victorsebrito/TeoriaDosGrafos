@@ -195,7 +195,6 @@ namespace TeoriaDosGrafos.API
                 {
                     List<Aresta> loListaArestas = APIUtil.FindArestasByVerticesIDs(loVertice.ID, loVertice2.ID, aoGrafo).OrderBy(a => a.Peso).Cast<Aresta>().ToList();
                     Aresta loMenorAresta = (loListaArestas.Count != 0) ? loListaArestas[0] : null;
-
                     loMatriz[i, j] = (loMenorAresta != null) ? loMenorAresta.Peso : -1;
 
                     j++;
@@ -497,8 +496,9 @@ namespace TeoriaDosGrafos.API
         /// <returns></returns>
         public static List<Aresta> FindArestasByVerticesIDs(int aiIDVertice1, int aiIDVertice2, Grafo aoGrafo)
         {
-            return aoGrafo.Arestas.FindAll(a => (a.Origem == aiIDVertice1 && a.Destino == aiIDVertice2) ||
-                                                       (a.Origem == aiIDVertice2 && a.Destino == aiIDVertice1));
+            //return aoGrafo.Arestas.FindAll(a => (a.Origem == aiIDVertice1 && a.Destino == aiIDVertice2) ||
+            //                                           (a.Origem == aiIDVertice2 && a.Destino == aiIDVertice1));
+            return aoGrafo.Arestas.FindAll(a => a.Origem == aiIDVertice1 && a.Destino == aiIDVertice2);
         }
 
         /// <summary>
@@ -525,11 +525,7 @@ namespace TeoriaDosGrafos.API
         #region Algoritmos
         public static int[,] FloydWarshall(int[,] graph, int verticesCount)
         {
-            int[,] distance = new int[verticesCount, verticesCount];
-
-            for (int i = 0; i < verticesCount; ++i)
-                for (int j = 0; j < verticesCount; ++j)
-                    distance[i, j] = graph[i, j];
+            int[,] distance = (int[,])graph.Clone();
 
             for (int k = 0; k < verticesCount; ++k)
             {
