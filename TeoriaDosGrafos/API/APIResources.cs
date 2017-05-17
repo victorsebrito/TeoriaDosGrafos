@@ -103,23 +103,11 @@ namespace TeoriaDosGrafos.API
             Cliente loCliente = APIUtil.ValidarCliente(context);
             int[,] distance = APIUtil.GetMenorCaminhoFloydWarshall(loCliente.Grafo);
 
-            for (int i = 0; i < loCliente.Grafo.Vertices.Count; ++i)
-            {
-                for (int j = 0; j < loCliente.Grafo.Vertices.Count; ++j)
-                {
-                    int INF = 99999;
-                    if (distance[i, j] == INF)
-                        Console.Write("INF".PadLeft(7));
-                    else
-                        Console.Write(distance[i, j].ToString().PadLeft(7));
-                }
-
-                Console.WriteLine();
-            }
+            string lsHtml = APIUtil.GetMatrizHTML(loCliente.Grafo.Vertices, distance);            
 
             context.Response.ContentType = ContentType.JSON;
             context.Response.ContentEncoding = Encoding.UTF8;
-            //context.Response.SendResponse(JsonConvert.SerializeObject( ));
+            context.Response.SendResponse(JsonConvert.SerializeObject(lsHtml));
 
             return context;
         }
@@ -129,7 +117,7 @@ namespace TeoriaDosGrafos.API
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        [RestRoute(HttpMethod = HttpMethod.GET, PathInfo = "api/grafo/menorCaminhoDijkstra")]
+        [RestRoute(HttpMethod = HttpMethod.POST, PathInfo = "api/grafo/menorCaminhoDijkstra")]
         public IHttpContext GetMenorCaminhoDijkstra(IHttpContext context)
         {
             Dictionary<string, string> loArgs = APIUtil.GetDictionaryFromContext(context);
@@ -157,7 +145,7 @@ namespace TeoriaDosGrafos.API
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        [RestRoute(HttpMethod = HttpMethod.GET, PathInfo = "api/grafo/menorCaminhoBF")]
+        [RestRoute(HttpMethod = HttpMethod.GET, PathInfo = "api/grafo/menorCaminhoBellmanFord")]
         public IHttpContext GetMenorCaminhoBellmanFord(IHttpContext context)
         {
             Dictionary<string, string> loArgs = APIUtil.GetDictionaryFromContext(context);

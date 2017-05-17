@@ -204,3 +204,12 @@ var arestasEntreVertices = function () {
     api.aresta.lista(queryString);
     return false;
 }
+
+var getDjikstra = function () {
+    $('#menorCaminhoDijkstra').find('.placeholder').hide();
+    var formData = $('#menorCaminhoDijkstra form').serializeArray();
+    var queryString = 'id=' + formData[0].value;
+
+    api.grafo.menorCaminhoDijkstra(queryString);
+    return false;
+}

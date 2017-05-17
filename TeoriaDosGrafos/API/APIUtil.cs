@@ -195,7 +195,7 @@ namespace TeoriaDosGrafos.API
                 {
                     List<Aresta> loListaArestas = APIUtil.FindArestasByVerticesIDs(loVertice.ID, loVertice2.ID, aoGrafo).OrderBy(a => a.Peso).Cast<Aresta>().ToList();
                     Aresta loMenorAresta = (loListaArestas.Count != 0) ? loListaArestas[0] : null;
-                    loMatriz[i, j] = (loMenorAresta != null) ? loMenorAresta.Peso : -1;
+                    loMatriz[i, j] = (loMenorAresta != null) ? loMenorAresta.Peso : 9999;
 
                     j++;
                 }
@@ -540,7 +540,7 @@ namespace TeoriaDosGrafos.API
             }
             return distance;
         }
-                
+    
 
         public static int[] BellmanFord(Grafo aoGrafo, int sourceID)
         {

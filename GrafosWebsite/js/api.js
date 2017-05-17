@@ -170,16 +170,16 @@ var api = {
                 changePage('#menorCaminhoFloydWarshall');
             });
         },
-        menorCaminhoDijkstra: function () {
-            rest.get('api/grafo/menorCaminhoDijkstra', function (data, status, request) {
+        menorCaminhoDijkstra: function (data) {
+            rest.post('api/grafo/menorCaminhoDijkstra', data, function (data, status, request) {
                 $('#menorCaminhoDijkstra').find('.placeholder').html(data);
                 changePage('#menorCaminhoDijkstra');
             });
         },
-        menorCaminhoBF: function () {
-            rest.get('api/grafo/menorCaminhoBF', function (data, status, request) {
-                $('#menorCaminhoBF').find('.placeholder').html(data);
-                changePage('#menorCaminhoBF');
+        menorCaminhoBellmanFord: function () {
+            rest.get('api/grafo/menorCaminhoBellmanFord', function (data, status, request) {
+                $('#menorCaminhoBellmanFord').find('.placeholder').html(data);
+                changePage('#menorCaminhoBellmanFord');
             });
         },
         grau: function () {

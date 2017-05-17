@@ -53,8 +53,8 @@
                         <button class="btn btn-default" onclick="api.grafo.matriz();">Matriz de Adjacência</button>
                         <button class="btn btn-default" onclick="api.grafo.matrizAcessibilidade();">Matriz de Acessibilidade</button>
                         <button class="btn btn-default" onclick="api.grafo.menorCaminhoFloydWarshall();">Menor Caminho Floyd-Warshall</button>
-                        <button class="btn btn-default" onclick="api.grafo.menorCaminhoDijkstra();">Menor Caminho Dijkstra</button>
-                        <button class="btn btn-default" onclick="api.grafo.menorCaminhoBF();">Menor Caminho Bellman-Ford</button>
+                        <button class="btn btn-default" onclick="changePage('#menorCaminhoDijkstra');">Menor Caminho Dijkstra</button>
+                        <button class="btn btn-default" onclick="api.grafo.menorCaminhoBellmanFord();">Menor Caminho Bellman-Ford</button>
                         <button class="btn btn-default" onclick="api.grafo.grau();">Grau do Grafo</button>
                         <button class="btn btn-default" onclick="api.grafo.conexo();">É Conexo?</button>
                         <button class="btn btn-default" onclick="api.grafo.euler();">Possui caminho de Euler?</button>
@@ -194,12 +194,33 @@
                 <div class="well page" id="menorCaminhoFloydWarshall">
                     <h1>Menor Caminho Floyd-Warshall</h1>
                     <div class="placeholder"></div>
+                   
                 </div>
                 <div class="well page" id="menorCaminhoDijkstra">
                     <h1>Menor Caminho Dijkstra</h1>
                     <div class="placeholder"></div>
+                    <form id="form-floyd-warshall" onsubmit="return getDjikstra()" method="post">
+                        <div class="row lista-vertices">
+                            <div class="item-vertice">
+                                <div class="col-md-12">
+                                    <div class="col-sm-3">
+                                        <div class="form-group required">
+                                            <label for="id" class="control-label">ID:</label>
+                                            <input type="number" class="form-control" id="id" name="id" required>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 text-right">
+                                <!--<button type="button" class="btn btn-default" id="clear-form-info">Limpar</button>-->
+                                <button type="submit" class="btn btn-primary">Enviar</button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
-                <div class="well page" id="menorCaminhoBF">
+                <div class="well page" id="menorCaminhoBellmanFord">
                     <h1>Menor Caminho Bellman-Ford</h1>
                     <div class="placeholder"></div>
                 </div>
