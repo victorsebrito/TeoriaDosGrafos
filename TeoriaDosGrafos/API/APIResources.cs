@@ -103,7 +103,7 @@ namespace TeoriaDosGrafos.API
             Cliente loCliente = APIUtil.ValidarCliente(context);
             int[,] distance = APIUtil.GetMenorCaminhoFloydWarshall(loCliente.Grafo);
 
-            string lsHtml = APIUtil.GetMatrizHTML(loCliente.Grafo.Vertices, distance);            
+            string lsHtml = APIUtil.GetMatrizHTML(loCliente.Grafo.Vertices, distance);
 
             context.Response.ContentType = ContentType.JSON;
             context.Response.ContentEncoding = Encoding.UTF8;
@@ -126,16 +126,28 @@ namespace TeoriaDosGrafos.API
 
             int liID = Convert.ToInt32(loArgs["id"]);
 
-            Vertice loVertice = APIUtil.FindVerticeByID(liID, loCliente.Grafo);                        
+            Vertice loVertice = APIUtil.FindVerticeByID(liID, loCliente.Grafo);
 
             int[] loMenorCaminho = APIUtil.GetMenorCaminhoDijkstra(loCliente.Grafo, loVertice.ID);
 
-            for (int i = 0; i < loCliente.Grafo.Vertices.Count; i++)
-                Console.Write(loMenorCaminho[i]);
+           
+            //int j = 0,i = 0;
+            
+            //int[,] liMatriz = new int[loCliente.Grafo.Vertices.Count, 2];
+            //for (i = 0; i < loCliente.Grafo.Vertices.Count; i++ )
+            //{
+            //    liMatriz[i, j] = i;
+            //    for (j = 1; j < 3; j++)
+            //    {
+            //        liMatriz[i,j] = loMenorCaminho[i];
+            //    }
+            //}
+
+            string lsHtml = APIUtil.GetMatrizHTML(loCliente.Grafo.Vertices, loMenorCaminho);
 
             context.Response.ContentType = ContentType.JSON;
             context.Response.ContentEncoding = Encoding.UTF8;
-            context.Response.SendResponse(JsonConvert.SerializeObject(loCliente));
+            context.Response.SendResponse(JsonConvert.SerializeObject(lsHtml));
 
             return context;
         }
@@ -145,7 +157,7 @@ namespace TeoriaDosGrafos.API
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        [RestRoute(HttpMethod = HttpMethod.GET, PathInfo = "api/grafo/menorCaminhoBellmanFord")]
+        [RestRoute(HttpMethod = HttpMethod.POST, PathInfo = "api/grafo/menorCaminhoBellmanFord")]
         public IHttpContext GetMenorCaminhoBellmanFord(IHttpContext context)
         {
             Dictionary<string, string> loArgs = APIUtil.GetDictionaryFromContext(context);
@@ -155,11 +167,11 @@ namespace TeoriaDosGrafos.API
             int liID = Convert.ToInt32(loArgs["id"]);
 
             Vertice loVertice = APIUtil.FindVerticeByID(liID, loCliente.Grafo);
-            APIUtil.GetMenorCaminhoBellmanFord(loCliente.Grafo, loVertice.ID);
+            int[] loMenoCarminho = APIUtil.GetMenorCaminhoBellmanFord(loCliente.Grafo, loVertice.ID);
 
             context.Response.ContentType = ContentType.JSON;
             context.Response.ContentEncoding = Encoding.UTF8;
-            context.Response.SendResponse(JsonConvert.SerializeObject(loCliente));
+            context.Response.SendResponse(JsonConvert.SerializeObject(loMenoCarminho));
 
             return context;
         }

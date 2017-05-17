@@ -77,41 +77,81 @@ namespace TeoriaDosGrafos.API
 
         }
 
-        public static string GetMatrizHTML(List<Vertice> aoVertices, int[,] aoMatriz)
+        public static string GetMatrizHTML(List<Vertice> aoVertices, object aoMatriz)
         {
-            StringBuilder loBuilder = new StringBuilder();
-            loBuilder.Append("<table class=\"table table-bordered text-center\">");
-            loBuilder.Append("<tr><th></th>");
-
-            foreach (Vertice loVertice in aoVertices)
-                loBuilder.Append(String.Format("<th>{0} ({1})</th>", loVertice.ID, loVertice.Nome));
-
-            loBuilder.Append("</tr>");
-
-            int i, j;
-            i = 0;
-            foreach (Vertice loVertice in aoVertices)
+            if (aoMatriz is int[,] loMatriz)
             {
-                j = 0;
+                StringBuilder loBuilder = new StringBuilder();
+                loBuilder.Append("<table class=\"table table-bordered text-center\">");
+                loBuilder.Append("<tr><th></th>");
 
-                loBuilder.Append("<tr>");
-                loBuilder.Append(String.Format("<th>{0} ({1})</th>", loVertice.ID, loVertice.Nome));
-
-                foreach (Vertice loVertice2 in aoVertices)
-                {
-                    loBuilder.Append("<td>");
-                    loBuilder.Append(aoMatriz[i,j]);
-                    loBuilder.Append("</td>");
-                    j++;
-                }
-                i++;
+                foreach (Vertice loVertice in aoVertices)
+                    loBuilder.Append(String.Format("<th>{0} ({1})</th>", loVertice.ID, loVertice.Nome));
 
                 loBuilder.Append("</tr>");
+
+                int i, j;
+                i = 0;
+                foreach (Vertice loVertice in aoVertices)
+                {
+                    j = 0;
+
+                    loBuilder.Append("<tr>");
+                    loBuilder.Append(String.Format("<th>{0} ({1})</th>", loVertice.ID, loVertice.Nome));
+
+                    foreach (Vertice loVertice2 in aoVertices)
+                    {
+                        loBuilder.Append("<td>");
+                        loBuilder.Append(loMatriz[i, j]);
+                        loBuilder.Append("</td>");
+                        j++;
+                    }
+                    i++;
+
+                    loBuilder.Append("</tr>");
+                }
+
+                loBuilder.Append("</table>");
+
+                return loBuilder.ToString();
             }
+            else if (aoMatriz is int[] loArray)
+            {
+                StringBuilder loBuilder = new StringBuilder();
+                loBuilder.Append("<table class=\"table table-bordered text-center\">");
+                loBuilder.Append("<tr><th></th>");
 
-            loBuilder.Append("</table>");
+                foreach (Vertice loVertice in aoVertices)
+                    loBuilder.Append(String.Format("<th>{0} ({1})</th>", loVertice.ID, loVertice.Nome));
 
-            return loBuilder.ToString();
+                loBuilder.Append("</tr>");
+
+                int i, j;
+                i = 0;
+                foreach (Vertice loVertice in aoVertices)
+                {
+                    j = 0;
+
+                    loBuilder.Append("<tr>");
+                    loBuilder.Append(String.Format("<th>{0} ({1})</th>", loVertice.ID, loVertice.Nome));
+
+                    foreach (Vertice loVertice2 in aoVertices)
+                    {
+                        loBuilder.Append("<td>");
+                        loBuilder.Append(loArray[i]);
+                        loBuilder.Append("</td>");
+                        j++;
+                    }
+                    i++;
+
+                    loBuilder.Append("</tr>");
+                }
+
+                loBuilder.Append("</table>");
+
+                return loBuilder.ToString();
+            }
+            return null;
         }
 
         /// <summary>

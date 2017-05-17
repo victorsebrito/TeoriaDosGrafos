@@ -213,3 +213,12 @@ var getDjikstra = function () {
     api.grafo.menorCaminhoDijkstra(queryString);
     return false;
 }
+
+var getBellmanFord = function () {
+    $('#menorCaminhoBellmanFord').find('.placeholder').hide();
+    var formData = $('#menorCaminhoBellmanFord form').serializeArray();
+    var queryString = 'id=' + formData[0].value;
+
+    api.grafo.menorCaminhoBellmanFord(queryString);
+    return false;
+}

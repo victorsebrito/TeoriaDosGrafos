@@ -172,12 +172,11 @@ var api = {
         },
         menorCaminhoDijkstra: function (data) {
             rest.post('api/grafo/menorCaminhoDijkstra', data, function (data, status, request) {
-                $('#menorCaminhoDijkstra').find('.placeholder').html(data);
-                changePage('#menorCaminhoDijkstra');
+                $('#menorCaminhoDijkstra').find('.placeholder').html(data);                
             });
         },
-        menorCaminhoBellmanFord: function () {
-            rest.get('api/grafo/menorCaminhoBellmanFord', function (data, status, request) {
+        menorCaminhoBellmanFord: function (data) {
+            rest.get('api/grafo/menorCaminhoBellmanFord', data, function (data, status, request) {
                 $('#menorCaminhoBellmanFord').find('.placeholder').html(data);
                 changePage('#menorCaminhoBellmanFord');
             });
