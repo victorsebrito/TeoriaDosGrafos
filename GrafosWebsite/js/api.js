@@ -176,9 +176,8 @@ var api = {
             });
         },
         menorCaminhoBellmanFord: function (data) {
-            rest.get('api/grafo/menorCaminhoBellmanFord', data, function (data, status, request) {
+            rest.post('api/grafo/menorCaminhoBellmanFord', data, function (data, status, request) {
                 $('#menorCaminhoBellmanFord').find('.placeholder').html(data);
-                changePage('#menorCaminhoBellmanFord');
             });
         },
         grau: function () {

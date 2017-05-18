@@ -143,11 +143,11 @@ namespace TeoriaDosGrafos.API
             //    }
             //}
 
-            string lsHtml = APIUtil.GetMatrizHTML(loCliente.Grafo.Vertices, loMenorCaminho);
+            //string lsHtml = APIUtil.GetMatrizHTML(loCliente.Grafo.Vertices, loMenorCaminho);
 
             context.Response.ContentType = ContentType.JSON;
             context.Response.ContentEncoding = Encoding.UTF8;
-            context.Response.SendResponse(JsonConvert.SerializeObject(lsHtml));
+            context.Response.SendResponse(JsonConvert.SerializeObject(loMenorCaminho));
 
             return context;
         }
@@ -167,7 +167,7 @@ namespace TeoriaDosGrafos.API
             int liID = Convert.ToInt32(loArgs["id"]);
 
             Vertice loVertice = APIUtil.FindVerticeByID(liID, loCliente.Grafo);
-            int[] loMenoCarminho = APIUtil.GetMenorCaminhoBellmanFord(loCliente.Grafo, loVertice.ID);
+            Dictionary<Vertice, int> loMenoCarminho = APIUtil.GetMenorCaminhoBellmanFord(loCliente.Grafo, loVertice.ID);
 
             context.Response.ContentType = ContentType.JSON;
             context.Response.ContentEncoding = Encoding.UTF8;

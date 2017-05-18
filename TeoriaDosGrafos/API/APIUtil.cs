@@ -305,16 +305,11 @@ namespace TeoriaDosGrafos.API
         /// <param name="aoGrafo"></param>
         /// <param name="sourceID"></param>
         /// <returns></returns>
-        public static int[] GetMenorCaminhoBellmanFord(Grafo aoGrafo, int sourceID)
+        public static Dictionary<Vertice, int> GetMenorCaminhoBellmanFord(Grafo aoGrafo, int sourceID)
         {
-            int[,] loMatriz = GetMatrizAdjacenciaPeso(aoGrafo);
             Vertice vertice = FindVerticeByID(sourceID, aoGrafo);
 
-            int[] loMenorCaminho = BellmanFord(aoGrafo, vertice.ID);
-
-            for(int i = 0; i < aoGrafo.Vertices.Count;i++)            
-                Console.Write(loMenorCaminho[i]);
-            
+            Dictionary<Vertice, int> loMenorCaminho = BellmanFord(aoGrafo, vertice);
             return loMenorCaminho;
         }
 
@@ -527,6 +522,12 @@ namespace TeoriaDosGrafos.API
             return aoGrafo.Arestas.FindAll(a => a.Origem == aiID || a.Destino == aiID);
         }
 
+
+        public static List<Aresta> GetArestasFromVertice(int aiID, Grafo aoGrafo)
+        {
+            return aoGrafo.Arestas.FindAll(a => a.Origem == aiID);
+        }
+
         /// <summary>
         /// Retorna todas as arestas ligando dois vértices.
         /// </summary>
@@ -582,51 +583,72 @@ namespace TeoriaDosGrafos.API
         }
     
 
-        public static int[] BellmanFord(Grafo aoGrafo, int sourceID)
+        public static Dictionary<Vertice, int> BellmanFord(Grafo aoGrafo, Vertice aoOrigem)
         {
-            int verticesCount = aoGrafo.Vertices.Count;
-            int edgesCount = aoGrafo.Arestas.Count;
-            int[] distance = new int[verticesCount];
+            //Dictionary<Vertice, int> loDistance = new Dictionary<Vertice, int>();
+            //aoGrafo.Vertices.ForEach(v => loDistance[v] = 9999);
 
-            for (int i = 0; i < verticesCount; i++)
-                distance[i] = int.MaxValue;
+            //loDistance[aoOrigem] = 0;
 
-            distance[sourceID] = 0;
+            //foreach (Vertice loVertice in aoGrafo.Vertices)
+            //{
+            //    foreach (Aresta loAresta in GetArestasFromVertice(loVertice.ID, aoGrafo))
+            //    {
+            //        Vertice loDestino = FindVerticeByID(loAresta.Destino, aoGrafo);
+            //        if (loDistance[loVertice] + loAresta.Peso < loDistance[loDestino])
+            //            loDistance[loDestino] = loDistance[loVertice] + loAresta.Peso;
+            //    }               
 
-            for (int i = 1; i <= verticesCount - 1; ++i)
+            //}
+
+            //return loDistance;
+
+            Dictionary<Vertice, int> loDistance = new Dictionary<Vertice, int>();
+            aoGrafo.Vertices.ForEach(v => loDistance[v] = 9999);
+
+            loDistance[aoOrigem] = 0;
+            bool lbChanged;
+
+            do
             {
-                for (int j = 0; j < edgesCount; ++j)
+                lbChanged = false;
+
+                foreach (Vertice loVertice in aoGrafo.Vertices)
                 {
-                    int u = aoGrafo.Arestas[j].Origem;
-                    int v = aoGrafo.Arestas[j].Destino;
-                    int weight = aoGrafo.Arestas[j].Peso;
+                    if (loDistance[loVertice] != INF)
+                    {
+                        foreach (Aresta loAresta in GetArestasFromVertice(loVertice.ID, aoGrafo))
+                        {
+                            Vertice loDestino = FindVerticeByID(loAresta.Destino, aoGrafo);
+                            int liDistance = loDistance[loVertice] + loAresta.Peso;
 
-                    if (distance[u] != int.MaxValue && distance[u] + weight < distance[v])
-                        distance[v] = distance[u] + weight;
+                            if (liDistance < loDistance[loDestino])
+                            {
+                                lbChanged = true;
+                                loDistance[loDestino] = liDistance;
+                            }
+
+                        }
+                    }
                 }
-            }
 
-            for (int i = 0; i < edgesCount; ++i)
-            {
-                int u = aoGrafo.Arestas[i].Origem;
-                int v = aoGrafo.Arestas[i].Destino;
-                int weight = aoGrafo.Arestas[i].Peso;
+            } while (lbChanged);
 
-                if (distance[u] != int.MaxValue && distance[u] + weight < distance[v])
-                    Console.WriteLine("Graph contains negative weight cycle.");
-            }
-            return distance;
+            return loDistance;
 
-            //PrintBellmanFord(distance, verticesCount);
+            //for (int i = 0; i < edgesCount; ++i)
+            //{
+            //    int u = aoGrafo.Arestas[i].Origem;
+            //    int v = aoGrafo.Arestas[i].Destino;
+            //    int weight = aoGrafo.Arestas[i].Peso;
+
+            //    if (distance[u] != int.MaxValue && distance[u] + weight < distance[v])
+            //        Console.WriteLine("Graph contains negative weight cycle.");
+            //}
+            //return distance;
+
         }
-
-        private static void PrintBellmanFord(int[] distance, int verticesCount)
-        {
-            Console.WriteLine("Vertex   Distance from source");
-
-            for (int i = 0; i < verticesCount; ++i)
-                Console.WriteLine("{0}\t {1}", i, distance[i]);
-        }
+        
 
         public static int[] Dijkstra(int[,] graph, int source, int verticesCount)
         {
