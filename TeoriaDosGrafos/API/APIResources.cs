@@ -103,7 +103,7 @@ namespace TeoriaDosGrafos.API
         {
             APIUtil.UpdateClientes(context);
             Cliente loCliente = APIUtil.ValidarCliente(context);
-            int[,] distance = APIUtil.GetMenorCaminhoFloydWarshall(loCliente.Grafo);
+            MultiKeyDictionary<Vertice, Vertice, int> distance = APIUtil.GetMenorCaminhoFloydWarshall(loCliente.Grafo);
 
             string lsHtml = APIUtil.GetMatrizHTML(loCliente.Grafo.Vertices, distance);
 

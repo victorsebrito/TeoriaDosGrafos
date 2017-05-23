@@ -5,7 +5,7 @@ using System.Text;
 
 namespace TeoriaDosGrafos.Classes.Util
 {
-    public class MultiKeyDictionary<T1, T2, T3> : Dictionary<T1, Dictionary<T2, T3>>
+    public class MultiKeyDictionary<T1, T2, T3> : Dictionary<T1, Dictionary<T2, T3>>, ICloneable
     {
         new public Dictionary<T2, T3> this[T1 key]
         {
@@ -19,6 +19,17 @@ namespace TeoriaDosGrafos.Classes.Util
 
                 return returnObj;
             }
+        }
+
+        public object Clone()
+        {
+            MultiKeyDictionary<T1, T2, T3> loClone = new MultiKeyDictionary<T1, T2, T3>();
+
+            foreach (KeyValuePair<T1, Dictionary<T2, T3>> loKeyValuePair in this)
+                foreach (KeyValuePair<T2, T3> loKeyValuePair2 in loKeyValuePair.Value)
+                    loClone[loKeyValuePair.Key][loKeyValuePair2.Key] = loKeyValuePair2.Value;
+
+            return loClone;
         }
     }
 }

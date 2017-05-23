@@ -269,13 +269,9 @@ namespace TeoriaDosGrafos.API
         /// </summary>
         /// <param name="aoGrafo"></param>
         /// <returns></returns>
-        public static int[,] GetMenorCaminhoFloydWarshall(Grafo aoGrafo)
+        public static MultiKeyDictionary<Vertice, Vertice, int> GetMenorCaminhoFloydWarshall(Grafo aoGrafo)
         {
-            //int[,] loMatriz = GetMatrizAdjacenciaPeso(aoGrafo);
-            int[,] loMatriz = null;
-            int[,] loMenorCaminho = FloydWarshall(loMatriz, aoGrafo.Vertices.Count);
-
-            return loMenorCaminho;
+            return FloydWarshall(aoGrafo);   
         }
         /// <summary>
         /// 
@@ -589,22 +585,23 @@ namespace TeoriaDosGrafos.API
         #endregion
 
         #region Algoritmos
-        public static int[,] FloydWarshall(int[,] graph, int verticesCount)
+        public static MultiKeyDictionary<Vertice, Vertice, int> FloydWarshall(Grafo aoGrafo)
         {
-            int[,] distance = (int[,])graph.Clone();
+            MultiKeyDictionary<Vertice, Vertice, int> loDistance = GetMatrizAdjacenciaPeso(aoGrafo);
 
-            for (int k = 0; k < verticesCount; ++k)
+            foreach(Vertice loVertice in aoGrafo.Vertices)
             {
-                for (int i = 0; i < verticesCount; ++i)
+                foreach(Vertice loVertice2 in aoGrafo.Vertices)
                 {
-                    for (int j = 0; j < verticesCount; ++j)
+                    foreach(Vertice loVertice3 in aoGrafo.Vertices)
                     {
-                        if (distance[i, k] + distance[k, j] < distance[i, j])
-                            distance[i, j] = distance[i, k] + distance[k, j];
+                        if (loDistance[loVertice2][loVertice] + loDistance[loVertice][loVertice3] < loDistance[loVertice2][loVertice3])
+                            loDistance[loVertice2][loVertice3] = loDistance[loVertice2][loVertice] + loDistance[loVertice][loVertice3];
                     }
                 }
             }
-            return distance;
+            
+            return loDistance;
         }
 
 
