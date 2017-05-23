@@ -10,6 +10,8 @@ using TeoriaDosGrafos.Classes;
 using System.Linq;
 using System.Text;
 using System.IO;
+using TeoriaDosGrafos.Classes.Util;
+using Newtonsoft.Json.Converters;
 
 namespace TeoriaDosGrafos.API
 {
@@ -128,27 +130,12 @@ namespace TeoriaDosGrafos.API
 
             Vertice loVertice = APIUtil.FindVerticeByID(liID, loCliente.Grafo);
 
-            int[] loMenorCaminho = APIUtil.GetMenorCaminhoDijkstra(loCliente.Grafo, loVertice.ID);
-
-           
-            //int j = 0,i = 0;
-            
-            //int[,] liMatriz = new int[loCliente.Grafo.Vertices.Count, 2];
-            //for (i = 0; i < loCliente.Grafo.Vertices.Count; i++ )
-            //{
-            //    liMatriz[i, j] = i;
-            //    for (j = 1; j < 3; j++)
-            //    {
-            //        liMatriz[i,j] = loMenorCaminho[i];
-            //    }
-            //}
-
-            //string lsHtml = APIUtil.GetMatrizHTML(loCliente.Grafo.Vertices, loMenorCaminho);
+            Dictionary<Vertice, int> loMenorCaminho = APIUtil.GetMenorCaminhoDijkstra(loCliente.Grafo, loVertice.ID);
 
             context.Response.ContentType = ContentType.JSON;
             context.Response.ContentEncoding = Encoding.UTF8;
-            context.Response.SendResponse(JsonConvert.SerializeObject(loMenorCaminho));
-
+            context.Response.SendResponse(JsonConvert.SerializeObject(APIUtil.GetListVerticeDistanceFromDictionary(loMenorCaminho)));
+             
             return context;
         }
 
