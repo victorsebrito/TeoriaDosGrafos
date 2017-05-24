@@ -67,7 +67,8 @@ namespace TeoriaDosGrafos.API
             Cliente loCliente = APIUtil.ValidarCliente(context);
             if (context.WasRespondedTo) return context;
 
-            string lsHtml = APIUtil.GetMatrizHTML(loCliente.Grafo.Vertices, APIUtil.GetMatrizAdjacencia(loCliente.Grafo));
+            MultiKeyDictionary<Vertice, Vertice, int> loMatriz = APIUtil.GetMatrizAdjacencia(loCliente.Grafo);
+            string lsHtml = APIUtil.GetMatrizHTML<int>(loMatriz);
 
             context.Response.ContentType = ContentType.HTML;
             context.Response.ContentEncoding = Encoding.UTF8;
@@ -85,7 +86,8 @@ namespace TeoriaDosGrafos.API
             APIUtil.UpdateClientes(context);
             Cliente loCliente = APIUtil.ValidarCliente(context);
 
-            string lsHtml = APIUtil.GetMatrizHTML(loCliente.Grafo.Vertices, APIUtil.GetMatrizAcessibilidade(loCliente.Grafo));
+            MultiKeyDictionary <Vertice, Vertice, int> loMatriz = APIUtil.GetMatrizAcessibilidade(loCliente.Grafo);
+            string lsHtml = APIUtil.GetMatrizHTML<int>(loMatriz);
 
             context.Response.ContentType = ContentType.HTML;
             context.Response.ContentEncoding = Encoding.UTF8;
@@ -103,13 +105,13 @@ namespace TeoriaDosGrafos.API
         {
             APIUtil.UpdateClientes(context);
             Cliente loCliente = APIUtil.ValidarCliente(context);
-            MultiKeyDictionary<Vertice, Vertice, int> distance = APIUtil.GetMenorCaminhoFloydWarshall(loCliente.Grafo);
 
-            string lsHtml = APIUtil.GetMatrizHTML(loCliente.Grafo.Vertices, distance);
+            MultiKeyDictionary<Vertice, Vertice, int> loMenorCaminho = APIUtil.GetMenorCaminhoFloydWarshall(loCliente.Grafo);
+            string lsHtml = APIUtil.GetMatrizHTML<int>(loMenorCaminho);
 
-            context.Response.ContentType = ContentType.JSON;
+            context.Response.ContentType = ContentType.HTML;
             context.Response.ContentEncoding = Encoding.UTF8;
-            context.Response.SendResponse(JsonConvert.SerializeObject(lsHtml));
+            context.Response.SendResponse(lsHtml);
 
             return context;
         }
@@ -130,11 +132,12 @@ namespace TeoriaDosGrafos.API
 
             Vertice loVertice = APIUtil.FindVerticeByID(liID, loCliente.Grafo);
 
-            Dictionary<Vertice, int> loMenorCaminho = APIUtil.GetMenorCaminhoDijkstra(loCliente.Grafo, loVertice.ID);
+            MultiKeyDictionary<Vertice, Vertice, int> loMenorCaminho = APIUtil.GetMenorCaminhoDijkstra(loCliente.Grafo, loVertice);
+            string lsHtml = APIUtil.GetMatrizHTML<int>(loMenorCaminho);
 
-            context.Response.ContentType = ContentType.JSON;
+            context.Response.ContentType = ContentType.HTML;
             context.Response.ContentEncoding = Encoding.UTF8;
-            context.Response.SendResponse(JsonConvert.SerializeObject(APIUtil.GetListVerticeDistanceFromDictionary(loMenorCaminho)));
+            context.Response.SendResponse(lsHtml);
              
             return context;
         }
@@ -154,11 +157,13 @@ namespace TeoriaDosGrafos.API
             int liID = Convert.ToInt32(loArgs["id"]);
 
             Vertice loVertice = APIUtil.FindVerticeByID(liID, loCliente.Grafo);
-            Dictionary<Vertice, int> loMenoCarminho = APIUtil.GetMenorCaminhoBellmanFord(loCliente.Grafo, loVertice.ID);
+            MultiKeyDictionary<Vertice, Vertice, int> loMenorCaminho = APIUtil.GetMenorCaminhoBellmanFord(loCliente.Grafo, loVertice);
 
-            context.Response.ContentType = ContentType.JSON;
+            string lsHtml = APIUtil.GetMatrizHTML<int>(loMenorCaminho);
+
+            context.Response.ContentType = ContentType.HTML;
             context.Response.ContentEncoding = Encoding.UTF8;
-            context.Response.SendResponse(JsonConvert.SerializeObject(loMenoCarminho));
+            context.Response.SendResponse(lsHtml);
 
             return context;
         }

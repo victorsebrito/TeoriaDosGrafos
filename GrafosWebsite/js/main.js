@@ -206,7 +206,6 @@ var arestasEntreVertices = function () {
 }
 
 var getDjikstra = function () {
-    $('#menorCaminhoDijkstra').find('.placeholder').hide();
     var formData = $('#menorCaminhoDijkstra form').serializeArray();
     var queryString = 'id=' + formData[0].value;
 

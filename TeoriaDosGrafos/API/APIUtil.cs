@@ -3,6 +3,7 @@ using Grapevine.Server;
 using Grapevine.Shared;
 using Newtonsoft.Json;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
@@ -15,7 +16,7 @@ namespace TeoriaDosGrafos.API
 {
     public static class APIUtil
     {
-        public const int INF = 99999;
+        public const int INF = 9999;
         #region Grafos
 
         /// <summary>
@@ -78,119 +79,42 @@ namespace TeoriaDosGrafos.API
 
         }
 
-        public static string GetMatrizHTML(List<Vertice> aoVertices, object aoMatriz)
+        public static string GetMatrizHTML<T>(Dictionary<Vertice, Dictionary<Vertice, T>> aoMatriz)
         {
-            if (aoMatriz is int[,] loMatriz)
-            {
-                StringBuilder loBuilder = new StringBuilder();
-                loBuilder.Append("<table class=\"table table-bordered text-center\">");
-                loBuilder.Append("<tr><th></th>");
+            StringBuilder loBuilder = new StringBuilder();
+            loBuilder.Append("<table class=\"table table-bordered text-center\">");
+            loBuilder.Append("<tr><th></th>");
 
-                foreach (Vertice loVertice in aoVertices)
-                    loBuilder.Append(String.Format("<th>{0} ({1})</th>", loVertice.ID, loVertice.Nome));
+            foreach (KeyValuePair<Vertice, T> loKeyValuePair in aoMatriz.First().Value)
+                loBuilder.Append(String.Format("<th>{0} ({1})</th>", loKeyValuePair.Key.ID, loKeyValuePair.Key.Nome));
+
+            loBuilder.Append("</tr>");
+
+            foreach (KeyValuePair<Vertice, Dictionary<Vertice, T>> loKeyValuePair in aoMatriz)
+            {
+                loBuilder.Append("<tr>");
+                loBuilder.Append(String.Format("<th>{0} ({1})</th>", loKeyValuePair.Key.ID, loKeyValuePair.Key.Nome));
+
+                foreach (KeyValuePair<Vertice, T> loKeyValuePair2 in loKeyValuePair.Value)
+                {
+                    loBuilder.Append("<td>");
+
+                    object loValue = aoMatriz[loKeyValuePair.Key][loKeyValuePair2.Key];
+
+                    if (loValue is int)
+                        loBuilder.Append(((int)loValue != INF) ? loValue.ToString() : "-");
+                    else if (loValue is bool)
+                        loBuilder.Append(((bool)loValue) ? "1" : "0");
+
+                    loBuilder.Append("</td>");
+                }
 
                 loBuilder.Append("</tr>");
-
-                int i, j;
-                i = 0;
-                foreach (Vertice loVertice in aoVertices)
-                {
-                    j = 0;
-
-                    loBuilder.Append("<tr>");
-                    loBuilder.Append(String.Format("<th>{0} ({1})</th>", loVertice.ID, loVertice.Nome));
-
-                    foreach (Vertice loVertice2 in aoVertices)
-                    {
-                        loBuilder.Append("<td>");
-                        loBuilder.Append(loMatriz[i, j]);
-                        loBuilder.Append("</td>");
-                        j++;
-                    }
-                    i++;
-
-                    loBuilder.Append("</tr>");
-                }
-
-                loBuilder.Append("</table>");
-
-                return loBuilder.ToString();
             }
-            else if (aoMatriz is int[] loArray)
-            {
-                StringBuilder loBuilder = new StringBuilder();
-                loBuilder.Append("<table class=\"table table-bordered text-center\">");
-                loBuilder.Append("<tr><th></th>");
 
-                foreach (Vertice loVertice in aoVertices)
-                    loBuilder.Append(String.Format("<th>{0} ({1})</th>", loVertice.ID, loVertice.Nome));
+            loBuilder.Append("</table>");
 
-                loBuilder.Append("</tr>");
-
-                int i, j;
-                i = 0;
-                foreach (Vertice loVertice in aoVertices)
-                {
-                    j = 0;
-
-                    loBuilder.Append("<tr>");
-                    loBuilder.Append(String.Format("<th>{0} ({1})</th>", loVertice.ID, loVertice.Nome));
-
-                    foreach (Vertice loVertice2 in aoVertices)
-                    {
-                        loBuilder.Append("<td>");
-                        loBuilder.Append(loArray[i]);
-                        loBuilder.Append("</td>");
-                        j++;
-                    }
-                    i++;
-
-                    loBuilder.Append("</tr>");
-                }
-
-                loBuilder.Append("</table>");
-
-                return loBuilder.ToString();
-            }
-            return null;
-        }
-
-        /// <summary>
-        /// Gera matriz booleana
-        /// </summary>
-        /// <param name="aoMatriz"></param>
-        /// <returns></returns>
-        public static object ConverteMatriz(object aoMatriz, int aiVerticesCount)
-        {
-            if (aoMatriz is int[,] loMatriz)
-            {
-                bool[,] loBoolMatriz = new bool[aiVerticesCount, aiVerticesCount];
-
-                for (int i = 0; i < aiVerticesCount; i++)
-                {
-                    for (int j = 0; j < aiVerticesCount; j++)
-                    {
-                        if (loMatriz[i, j] == 1)
-                            loBoolMatriz[i, j] = true;
-                        else
-                            loBoolMatriz[i, j] = false;
-                    }
-                }
-
-                return loBoolMatriz;
-            }
-            else if (aoMatriz is bool[,] loMatrizB)
-            {
-                int[,] loMatrizI = new int[aiVerticesCount, aiVerticesCount];
-                for (int i = 0; i < aiVerticesCount; i++)
-                {
-                    for (int j = 0; j < aiVerticesCount; j++)
-                        loMatrizI[i, j] = (loMatrizB[i, j]) ? 1 : 0;
-                }
-
-                return loMatrizI;
-            }
-            return null;
+            return loBuilder.ToString();
         }
 
         /// <summary>
@@ -198,22 +122,18 @@ namespace TeoriaDosGrafos.API
         /// </summary>
         /// <param name="aoGrafo"></param>
         /// <returns></returns>
-        public static int[,] GetMatrizAcessibilidade(Grafo aoGrafo)
+        public static MultiKeyDictionary<Vertice, Vertice, int> GetMatrizAcessibilidade(Grafo aoGrafo)
         {
-            int[,] loMatriz = GetMatrizAdjacencia(aoGrafo);
-            bool[,] loMatrizBool = (bool[,])ConverteMatriz(loMatriz, aoGrafo.Vertices.Count);
+            MultiKeyDictionary<Vertice, Vertice, int> loMatrizAdjacencia = GetMatrizAdjacencia(aoGrafo);
 
             //Algoritmo de Warshall
-            for (int k = 0; k < aoGrafo.Vertices.Count; ++k)
-            {
-                for (int i = 0; i < aoGrafo.Vertices.Count; ++i)
-                {
-                    for (int j = 0; j < aoGrafo.Vertices.Count; ++j)
-                        loMatrizBool[i, j] = loMatrizBool[i, j] || (loMatrizBool[i, k] && loMatrizBool[k, j]);
-                }
-            }
-
-            return (int[,])ConverteMatriz(loMatrizBool, aoGrafo.Vertices.Count);
+            foreach (Vertice loVertice in aoGrafo.Vertices)
+                foreach (Vertice loVertice2 in aoGrafo.Vertices)
+                    foreach (Vertice loVertice3 in aoGrafo.Vertices)
+                        loMatrizAdjacencia[loVertice2][loVertice3] =
+                            ((loMatrizAdjacencia[loVertice2][loVertice3] != 0) || ((loMatrizAdjacencia[loVertice2][loVertice] != 0) && (loMatrizAdjacencia[loVertice][loVertice3] != 0))) ? 1 : 0;
+            
+            return loMatrizAdjacencia;
         }
 
         /// <summary>
@@ -231,7 +151,7 @@ namespace TeoriaDosGrafos.API
                 {
                     List<Aresta> loListaArestas = APIUtil.FindArestasByVerticesIDs(loVertice.ID, loVertice2.ID, aoGrafo).OrderBy(a => a.Peso).Cast<Aresta>().ToList();
                     Aresta loMenorAresta = (loListaArestas.Count != 0) ? loListaArestas[0] : null;
-                    loMatriz[loVertice][loVertice2] = (loMenorAresta != null) ? loMenorAresta.Peso : 9999;
+                    loMatriz[loVertice][loVertice2] = (loMenorAresta != null) ? loMenorAresta.Peso : INF;
                 }
             }
 
@@ -243,24 +163,14 @@ namespace TeoriaDosGrafos.API
         /// </summary>
         /// <param name="aoGrafo"></param>
         /// <returns></returns>
-        public static int[,] GetMatrizAdjacencia(Grafo aoGrafo)
+        public static MultiKeyDictionary<Vertice, Vertice, int> GetMatrizAdjacencia(Grafo aoGrafo)
         {
-            int[,] loMatriz = new int[aoGrafo.Vertices.Count, aoGrafo.Vertices.Count];
-
-            int i, j;
-            i = 0;
+            MultiKeyDictionary<Vertice, Vertice, int> loMatriz = new MultiKeyDictionary<Vertice, Vertice, int>();
 
             foreach (Vertice loVertice in aoGrafo.Vertices)
-            {
-                j = 0;
-
                 foreach (Vertice loVertice2 in aoGrafo.Vertices)
-                {
-                    loMatriz[i, j] = (APIUtil.FindArestasByVerticesIDs(loVertice.ID, loVertice2.ID, aoGrafo).Count > 0) ? 1 : 0;
-                    j++;
-                }
-                i++;
-            }
+                    loMatriz[loVertice][loVertice2] = (APIUtil.FindArestasByVerticesIDs(loVertice.ID, loVertice2.ID, aoGrafo).Count > 0) ? 1 : 0;
+
             return loMatriz;
         }
 
@@ -271,7 +181,7 @@ namespace TeoriaDosGrafos.API
         /// <returns></returns>
         public static MultiKeyDictionary<Vertice, Vertice, int> GetMenorCaminhoFloydWarshall(Grafo aoGrafo)
         {
-            return FloydWarshall(aoGrafo);   
+            return FloydWarshall(aoGrafo);
         }
         /// <summary>
         /// 
@@ -279,11 +189,13 @@ namespace TeoriaDosGrafos.API
         /// <param name="aoGrafo"></param>
         /// <param name="sourceID"></param>
         /// <returns></returns>
-        public static Dictionary<Vertice, int> GetMenorCaminhoDijkstra(Grafo aoGrafo, int aiSourceID)
+        public static MultiKeyDictionary<Vertice, Vertice, int> GetMenorCaminhoDijkstra(Grafo aoGrafo, Vertice aoSourceVertice)
         {
             MultiKeyDictionary<Vertice, Vertice, int> loMatriz = GetMatrizAdjacenciaPeso(aoGrafo);
-            
-            Dictionary<Vertice, int> loDistance = new Dictionary<Vertice, int>();
+
+            MultiKeyDictionary<Vertice, Vertice, int> loDistanceMatriz = new MultiKeyDictionary<Vertice, Vertice, int>();
+            Dictionary<Vertice, int> loDistance = loDistanceMatriz[aoSourceVertice];
+
             Dictionary<Vertice, bool> loShortestPathTreeSet = new Dictionary<Vertice, bool>();
 
             aoGrafo.Vertices.ForEach(v =>
@@ -292,38 +204,39 @@ namespace TeoriaDosGrafos.API
                 loShortestPathTreeSet[v] = false;
             });
 
-            Vertice loSourceVertice = FindVerticeByID(aiSourceID, aoGrafo);
-            loDistance[loSourceVertice] = 0;
+            loDistance[aoSourceVertice] = 0;
 
-            foreach (Vertice loVertice in aoGrafo.Vertices.Except(new List<Vertice> { loSourceVertice }))
+            foreach (Vertice loVertice in aoGrafo.Vertices.Except(new List<Vertice> { aoSourceVertice }))
             {
                 Vertice u = MinimumDistance(loDistance, loShortestPathTreeSet, aoGrafo.Vertices);
                 loShortestPathTreeSet[u] = true;
 
-                foreach(Vertice loVertice2 in aoGrafo.Vertices)
+                foreach (Vertice loVertice2 in aoGrafo.Vertices)
                 {
                     if (!loShortestPathTreeSet[loVertice2] && Convert.ToBoolean(loMatriz[u][loVertice2]) && loDistance[u] != INF && loDistance[u] + loMatriz[u][loVertice2] < loDistance[loVertice2])
                         loDistance[loVertice2] = loDistance[u] + loMatriz[u][loVertice2];
                 }
             }
-            
-            return loDistance;
+
+            return loDistanceMatriz;
         }
 
-        /// <summary>
-        /// Recebe matriz de pesos e retorna menor caminho
-        /// </summary>
-        /// <param name="aoGrafo"></param>
-        /// <param name="sourceID"></param>
-        /// <returns></returns>
-        public static Dictionary<Vertice, int> GetMenorCaminhoBellmanFord(Grafo aoGrafo, int sourceID)
+        private static Vertice MinimumDistance(Dictionary<Vertice, int> aoDistance, Dictionary<Vertice, bool> aoShortestPathTreeSet, List<Vertice> aoVertices)
         {
-            Vertice vertice = FindVerticeByID(sourceID, aoGrafo);
+            int liMin = INF;
+            Vertice loMinVertice = null;
 
-            Dictionary<Vertice, int> loMenorCaminho = BellmanFord(aoGrafo, vertice);
-            return loMenorCaminho;
+            foreach (Vertice loVertice in aoVertices)
+            {
+                if (!aoShortestPathTreeSet[loVertice] && aoDistance[loVertice] <= liMin)
+                {
+                    liMin = aoDistance[loVertice];
+                    loMinVertice = loVertice;
+                }
+            }
+
+            return loMinVertice;
         }
-
 
 
         #endregion
@@ -572,16 +485,6 @@ namespace TeoriaDosGrafos.API
             return loListaArestas;
         }
 
-        public static List<VerticeDistance> GetListVerticeDistanceFromDictionary(Dictionary<Vertice, int> aoDictionary)
-        {
-            List<VerticeDistance> loVerticeDistance = new List<VerticeDistance>();
-
-            foreach (KeyValuePair<Vertice, int> loEntry in aoDictionary)
-                loVerticeDistance.Add(new VerticeDistance(loEntry.Key, loEntry.Value));
-
-            return loVerticeDistance;
-        }
-
         #endregion
 
         #region Algoritmos
@@ -589,26 +492,28 @@ namespace TeoriaDosGrafos.API
         {
             MultiKeyDictionary<Vertice, Vertice, int> loDistance = GetMatrizAdjacenciaPeso(aoGrafo);
 
-            foreach(Vertice loVertice in aoGrafo.Vertices)
+            foreach (Vertice loVertice in aoGrafo.Vertices)
             {
-                foreach(Vertice loVertice2 in aoGrafo.Vertices)
+                foreach (Vertice loVertice2 in aoGrafo.Vertices)
                 {
-                    foreach(Vertice loVertice3 in aoGrafo.Vertices)
+                    foreach (Vertice loVertice3 in aoGrafo.Vertices)
                     {
                         if (loDistance[loVertice2][loVertice] + loDistance[loVertice][loVertice3] < loDistance[loVertice2][loVertice3])
                             loDistance[loVertice2][loVertice3] = loDistance[loVertice2][loVertice] + loDistance[loVertice][loVertice3];
                     }
                 }
             }
-            
+
             return loDistance;
         }
 
 
-        public static Dictionary<Vertice, int> BellmanFord(Grafo aoGrafo, Vertice aoOrigem)
+        public static MultiKeyDictionary<Vertice, Vertice, int> GetMenorCaminhoBellmanFord(Grafo aoGrafo, Vertice aoOrigem)
         {
-            Dictionary<Vertice, int> loDistance = new Dictionary<Vertice, int>();
-            aoGrafo.Vertices.ForEach(v => loDistance[v] = 9999);
+            MultiKeyDictionary<Vertice, Vertice, int> loDistanceMatriz = new MultiKeyDictionary<Vertice, Vertice, int>();
+            Dictionary<Vertice, int> loDistance = loDistanceMatriz[aoOrigem];
+
+            aoGrafo.Vertices.ForEach(v => loDistance[v] = INF);
 
             loDistance[aoOrigem] = 0;
             bool lbChanged;
@@ -638,25 +543,8 @@ namespace TeoriaDosGrafos.API
 
             } while (lbChanged);
 
-            return loDistance;
+            return loDistanceMatriz;
 
-        }
-
-        private static Vertice MinimumDistance(Dictionary<Vertice, int> aoDistance, Dictionary<Vertice, bool> aoShortestPathTreeSet, List<Vertice> aoVertices)
-        {
-            int liMin = INF;
-            Vertice loMinVertice = null;
-
-            foreach(Vertice loVertice in aoVertices)
-            {
-                if (!aoShortestPathTreeSet[loVertice] && aoDistance[loVertice] <= liMin)
-                {
-                    liMin = aoDistance[loVertice];
-                    loMinVertice = loVertice;
-                }
-            }
-
-            return loMinVertice;
         }
 
         public static void Floyd(Grafo aoGrafo)
