@@ -207,7 +207,7 @@ var arestasEntreVertices = function () {
 
 var getDjikstra = function () {
     var formData = $('#menorCaminhoDijkstra form').serializeArray();
-    var queryString = 'id=' + formData[0].value;
+    var queryString = 'origem=' + formData[0].value + '&destino=' + formData[1].value;
 
     api.grafo.menorCaminhoDijkstra(queryString);
     return false;

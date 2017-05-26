@@ -182,6 +182,7 @@ var api = {
                // $('#menorCaminhoBellmanFord').find('form').hide();
             });
         },
+
         grau: function () {
             rest.get('api/grafo/grau', function (data, status, request) {
                 $('#grau-maximo').find('h2').text(data[2].NumGrau);
@@ -275,6 +276,9 @@ var api = {
         }
     },
 
+    benchmark: {
+
+    },
     tabela: {
         function(linhas, colunas) {
             linhas = 6;
@@ -289,4 +293,6 @@ var api = {
             }
         }
     }
+
+
 }

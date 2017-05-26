@@ -68,7 +68,7 @@ namespace TeoriaDosGrafos.API
             if (context.WasRespondedTo) return context;
 
             MultiKeyDictionary<Vertice, Vertice, int> loMatriz = APIUtil.GetMatrizAdjacencia(loCliente.Grafo);
-            string lsHtml = APIUtil.GetMatrizHTML<int>(loMatriz);
+            string lsHtml = APIUtil.GetMatrizHTML(loMatriz);
 
             context.Response.ContentType = ContentType.HTML;
             context.Response.ContentEncoding = Encoding.UTF8;
@@ -87,7 +87,7 @@ namespace TeoriaDosGrafos.API
             Cliente loCliente = APIUtil.ValidarCliente(context);
 
             MultiKeyDictionary <Vertice, Vertice, int> loMatriz = APIUtil.GetMatrizAcessibilidade(loCliente.Grafo);
-            string lsHtml = APIUtil.GetMatrizHTML<int>(loMatriz);
+            string lsHtml = APIUtil.GetMatrizHTML(loMatriz);
 
             context.Response.ContentType = ContentType.HTML;
             context.Response.ContentEncoding = Encoding.UTF8;
@@ -107,7 +107,7 @@ namespace TeoriaDosGrafos.API
             Cliente loCliente = APIUtil.ValidarCliente(context);
 
             MultiKeyDictionary<Vertice, Vertice, int> loMenorCaminho = APIUtil.GetMenorCaminhoFloydWarshall(loCliente.Grafo);
-            string lsHtml = APIUtil.GetMatrizHTML<int>(loMenorCaminho);
+            string lsHtml = APIUtil.GetMatrizHTML(loMenorCaminho);
 
             context.Response.ContentType = ContentType.HTML;
             context.Response.ContentEncoding = Encoding.UTF8;
@@ -128,16 +128,23 @@ namespace TeoriaDosGrafos.API
             APIUtil.UpdateClientes(context);
             Cliente loCliente = APIUtil.ValidarCliente(context);
 
-            int liID = Convert.ToInt32(loArgs["id"]);
+            int liOrigem = Convert.ToInt32(loArgs["origem"]);
+            int liDestino = Convert.ToInt32(loArgs["destino"]);
 
-            Vertice loVertice = APIUtil.FindVerticeByID(liID, loCliente.Grafo);
+            Vertice loOrigem = APIUtil.FindVerticeByID(liOrigem, loCliente.Grafo);
+            Vertice loDestino = APIUtil.FindVerticeByID(liDestino, loCliente.Grafo);
 
-            MultiKeyDictionary<Vertice, Vertice, int> loMenorCaminho = APIUtil.GetMenorCaminhoDijkstra(loCliente.Grafo, loVertice);
-            string lsHtml = APIUtil.GetMatrizHTML<int>(loMenorCaminho);
+            if (loOrigem != null && loDestino != null)
+            {
+                MultiKeyDictionary<Vertice, Vertice, int> loMenorCaminho = APIUtil.GetMenorCaminhoDijkstra(loCliente.Grafo, loOrigem, loDestino);
+                string lsHtml = APIUtil.GetMatrizHTML(loMenorCaminho);
 
-            context.Response.ContentType = ContentType.HTML;
-            context.Response.ContentEncoding = Encoding.UTF8;
-            context.Response.SendResponse(lsHtml);
+                context.Response.ContentType = ContentType.HTML;
+                context.Response.ContentEncoding = Encoding.UTF8;
+                context.Response.SendResponse(lsHtml);
+            }
+            else
+                context.Response.SendResponse(HttpStatusCode.NotFound);
              
             return context;
         }
@@ -159,7 +166,7 @@ namespace TeoriaDosGrafos.API
             Vertice loVertice = APIUtil.FindVerticeByID(liID, loCliente.Grafo);
             MultiKeyDictionary<Vertice, Vertice, int> loMenorCaminho = APIUtil.GetMenorCaminhoBellmanFord(loCliente.Grafo, loVertice);
 
-            string lsHtml = APIUtil.GetMatrizHTML<int>(loMenorCaminho);
+            string lsHtml = APIUtil.GetMatrizHTML(loMenorCaminho);
 
             context.Response.ContentType = ContentType.HTML;
             context.Response.ContentEncoding = Encoding.UTF8;

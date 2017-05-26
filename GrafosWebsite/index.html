@@ -58,6 +58,7 @@
                         <button class="btn btn-default" onclick="api.grafo.grau();">Grau do Grafo</button>
                         <button class="btn btn-default" onclick="api.grafo.conexo();">É Conexo?</button>
                         <button class="btn btn-default" onclick="api.grafo.euler();">Possui caminho de Euler?</button>
+                        <button class="btn btn-default" onclick="api.grafo.euler();">Benchmark</button>
                     </div>
                     <div class="grupo-funcoes">
                         <h4>Vértices</h4>
@@ -205,8 +206,14 @@
                                 <div class="col-md-12">
                                     <div class="col-sm-3">
                                         <div class="form-group required">
-                                            <label for="id" class="control-label">ID:</label>
-                                            <input type="number" class="form-control" id="id" name="id" required>
+                                            <label for="origem" class="control-label">Origem:</label>
+                                            <input type="number" class="form-control" name="origem" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <div class="form-group required">
+                                            <label for="destino" class="control-label">Destino:</label>
+                                            <input type="number" class="form-control" name="destino" required>
                                         </div>
                                     </div>
                                 </div>
