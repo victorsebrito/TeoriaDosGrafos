@@ -58,7 +58,7 @@
                         <button class="btn btn-default" onclick="api.grafo.grau();">Grau do Grafo</button>
                         <button class="btn btn-default" onclick="api.grafo.conexo();">É Conexo?</button>
                         <button class="btn btn-default" onclick="api.grafo.euler();">Possui caminho de Euler?</button>
-                        <button class="btn btn-default" onclick="api.grafo.euler();">Benchmark</button>
+                        <button class="btn btn-default" onclick="changePage('#benchmark');">Benchmark</button>
                     </div>
                     <div class="grupo-funcoes">
                         <h4>Vértices</h4>
@@ -201,6 +201,36 @@
                     <h1>Menor Caminho Dijkstra</h1>
                     <div class="placeholder"></div>
                     <form id="form-Dijkstra" onsubmit="return getDjikstra()" method="post">
+                        <div class="row lista-vertices">
+                            <div class="item-vertice">
+                                <div class="col-md-12">
+                                    <div class="col-sm-3">
+                                        <div class="form-group required">
+                                            <label for="origem" class="control-label">Origem:</label>
+                                            <input type="number" class="form-control" name="origem" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <div class="form-group required">
+                                            <label for="destino" class="control-label">Destino:</label>
+                                            <input type="number" class="form-control" name="destino" required>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 text-right">
+                                <!--<button type="button" class="btn btn-default" id="clear-form-info">Limpar</button>-->
+                                <button type="submit" class="btn btn-primary">Enviar</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="well page" id="benchmark">
+                    <h1>Benchmark</h1>
+                    <div class="placeholder"></div>
+                    <form id="form-Benchmark" onsubmit="return benchmark()" method="post">
                         <div class="row lista-vertices">
                             <div class="item-vertice">
                                 <div class="col-md-12">
@@ -517,5 +547,6 @@
     <script src="js/main.js"></script>
     <script src="js/api.js"></script>
     <script src="js/run_prettify.js"></script>
+    <script src="js/loadingoverlay.min.js"></script>
 </body>
 </html>

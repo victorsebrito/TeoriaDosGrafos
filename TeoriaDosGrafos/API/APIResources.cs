@@ -12,6 +12,7 @@ using System.Text;
 using System.IO;
 using TeoriaDosGrafos.Classes.Util;
 using Newtonsoft.Json.Converters;
+using System.Diagnostics;
 
 namespace TeoriaDosGrafos.API
 {
@@ -73,6 +74,49 @@ namespace TeoriaDosGrafos.API
             context.Response.ContentType = ContentType.HTML;
             context.Response.ContentEncoding = Encoding.UTF8;
             context.Response.SendResponse(lsHtml);
+
+            return context;
+        }
+
+        [RestRoute(HttpMethod = HttpMethod.POST, PathInfo = "api/grafo/benchmark")]
+        public IHttpContext GetBenchmarkResults(IHttpContext context)
+        {
+            Dictionary<string, string> loArgs = APIUtil.GetDictionaryFromContext(context);
+            APIUtil.UpdateClientes(context);
+            Cliente loCliente = APIUtil.ValidarCliente(context);
+
+            int liOrigem = Convert.ToInt32(loArgs["origem"]);
+            int liDestino = Convert.ToInt32(loArgs["destino"]);
+
+            Vertice loOrigem = APIUtil.FindVerticeByID(liOrigem, loCliente.Grafo);
+            Vertice loDestino = APIUtil.FindVerticeByID(liDestino, loCliente.Grafo);
+
+            if (loOrigem != null && loDestino != null)
+            {
+                Stopwatch loWatch;
+
+                loWatch = Stopwatch.StartNew();
+                APIUtil.GetMenorCaminhoDijkstra(loCliente.Grafo, loOrigem, loDestino);
+                loWatch.Stop();
+                Console.WriteLine("Dijkstra: {0}", loWatch.ElapsedMilliseconds);
+                                
+
+                loWatch = Stopwatch.StartNew();
+                APIUtil.GetMenorCaminhoBellmanFord(loCliente.Grafo, loOrigem);
+                loWatch.Stop();
+                Console.WriteLine("Bellman-Ford: {0}", loWatch.ElapsedMilliseconds);
+
+                loWatch = Stopwatch.StartNew();
+                APIUtil.GetMenorCaminhoFloydWarshall(loCliente.Grafo);
+                loWatch.Stop();
+                Console.WriteLine("Floyd-Warshall: {0}", loWatch.ElapsedMilliseconds);
+
+                context.Response.ContentType = ContentType.HTML;
+                context.Response.ContentEncoding = Encoding.UTF8;
+                context.Response.SendResponse("A");
+            }
+            else
+                context.Response.SendResponse(HttpStatusCode.NotFound);
 
             return context;
         }

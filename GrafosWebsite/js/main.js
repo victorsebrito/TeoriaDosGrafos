@@ -221,3 +221,12 @@ var getBellmanFord = function () {
     api.grafo.menorCaminhoBellmanFord(queryString);
     return false;
 }
+
+var benchmark = function () {
+    var formData = $('#benchmark form').serializeArray();
+    var queryString = 'origem=' + formData[0].value + '&destino=' + formData[1].value;
+
+    api.grafo.getBenchmark(queryString);
+    return false;
+}
+    

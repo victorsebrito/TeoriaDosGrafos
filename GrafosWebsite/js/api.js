@@ -7,10 +7,18 @@ $.ajaxSetup({
             request.setRequestHeader('X-Grafo-ID', grafoID);
         else if (this.url !== host + 'api/grafo' && this.type !== 'POST')
             console.log("Not authorized");
+
+        $.LoadingOverlay("show", {
+            color: "white",
+            image: "img/loading.gif"
+        });
     },
     error: function (data, status, request) {
         alerta(false);
         console.log(new api.Response(data, status, request));
+    },
+    complete: function () {
+        $.LoadingOverlay("hide");
     }
 });
 
@@ -182,7 +190,11 @@ var api = {
                // $('#menorCaminhoBellmanFord').find('form').hide();
             });
         },
-
+        getBenchmark: function (data) {
+            rest.post('api/grafo/benchmark', data, function (data, status, request) {
+                $('#benchmark').find('.placeholder').html(data).show();                
+            });
+        },
         grau: function () {
             rest.get('api/grafo/grau', function (data, status, request) {
                 $('#grau-maximo').find('h2').text(data[2].NumGrau);
