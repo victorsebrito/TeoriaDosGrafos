@@ -21,15 +21,5 @@ namespace TeoriaDosGrafos.Classes
 
         [JsonProperty(PropertyName = "peso")]
         public int Peso { get; set; }
-
-
-        /// <summary>
-        /// Valida a aresta, verificando se a origem e o destino existem.
-        /// </summary>
-        /// <returns></returns>
-        public bool IsArestaValida(Grafo aoGrafo)
-        {
-            return (APIUtil.FindVerticeByID(Origem, aoGrafo) != null && APIUtil.FindVerticeByID(Destino, aoGrafo) != null);
-        }
     }
 }

@@ -16,5 +16,5 @@ namespace TeoriaDosGrafos.Classes
 	    public List<Vertice> Vertices { get; set; }
 	    public List<Aresta> Arestas { get; set; }
 
-	}
+    }
 }

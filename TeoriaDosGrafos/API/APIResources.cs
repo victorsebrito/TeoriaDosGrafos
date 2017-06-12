@@ -13,6 +13,7 @@ using System.IO;
 using TeoriaDosGrafos.Classes.Util;
 using Newtonsoft.Json.Converters;
 using System.Diagnostics;
+using Newtonsoft.Json.Linq;
 
 namespace TeoriaDosGrafos.API
 {
@@ -81,6 +82,13 @@ namespace TeoriaDosGrafos.API
         [RestRoute(HttpMethod = HttpMethod.POST, PathInfo = "api/grafo/benchmark")]
         public IHttpContext GetBenchmarkResults(IHttpContext context)
         {
+            JObject BenchmarkResult(string aoNome, long alTempo, int aiIteracoes) {
+                return new JObject(new JProperty(aoNome,
+                        new JObject(
+                            new JProperty("Tempo (ms)", alTempo),
+                            new JProperty("Iterações", aiIteracoes))));
+            }
+            
             Dictionary<string, string> loArgs = APIUtil.GetDictionaryFromContext(context);
             APIUtil.UpdateClientes(context);
             Cliente loCliente = APIUtil.ValidarCliente(context);
@@ -94,26 +102,28 @@ namespace TeoriaDosGrafos.API
             if (loOrigem != null && loDestino != null)
             {
                 Stopwatch loWatch;
+                int liIterationsCount;
+
+                JArray loJArray = new JArray();
 
                 loWatch = Stopwatch.StartNew();
-                APIUtil.GetMenorCaminhoDijkstra(loCliente.Grafo, loOrigem, loDestino);
+                APIUtil.Dijkstra(loCliente.Grafo, loOrigem, loDestino, out liIterationsCount);
                 loWatch.Stop();
-                Console.WriteLine("Dijkstra: {0}", loWatch.ElapsedMilliseconds);
+                loJArray.Add(BenchmarkResult("Dijkstra", loWatch.ElapsedMilliseconds, liIterationsCount));
                                 
+                loWatch = Stopwatch.StartNew();
+                APIUtil.BellmanFord(loCliente.Grafo, loOrigem, out liIterationsCount);
+                loWatch.Stop();
+                loJArray.Add(BenchmarkResult("Bellman Ford", loWatch.ElapsedMilliseconds, liIterationsCount));
 
                 loWatch = Stopwatch.StartNew();
-                APIUtil.GetMenorCaminhoBellmanFord(loCliente.Grafo, loOrigem);
+                APIUtil.FloydWarshall(loCliente.Grafo, out liIterationsCount);
                 loWatch.Stop();
-                Console.WriteLine("Bellman-Ford: {0}", loWatch.ElapsedMilliseconds);
+                loJArray.Add(BenchmarkResult("Floyd-Warshall", loWatch.ElapsedMilliseconds, liIterationsCount));
 
-                loWatch = Stopwatch.StartNew();
-                APIUtil.GetMenorCaminhoFloydWarshall(loCliente.Grafo);
-                loWatch.Stop();
-                Console.WriteLine("Floyd-Warshall: {0}", loWatch.ElapsedMilliseconds);
-
-                context.Response.ContentType = ContentType.HTML;
+                context.Response.ContentType = ContentType.JSON;
                 context.Response.ContentEncoding = Encoding.UTF8;
-                context.Response.SendResponse("A");
+                context.Response.SendResponse(loJArray.ToString());
             }
             else
                 context.Response.SendResponse(HttpStatusCode.NotFound);
@@ -130,7 +140,7 @@ namespace TeoriaDosGrafos.API
             APIUtil.UpdateClientes(context);
             Cliente loCliente = APIUtil.ValidarCliente(context);
 
-            MultiKeyDictionary <Vertice, Vertice, int> loMatriz = APIUtil.GetMatrizAcessibilidade(loCliente.Grafo);
+            MultiKeyDictionary <Vertice, Vertice, int> loMatriz = APIUtil.Warshall(loCliente.Grafo);
             string lsHtml = APIUtil.GetMatrizHTML(loMatriz);
 
             context.Response.ContentType = ContentType.HTML;
@@ -150,7 +160,8 @@ namespace TeoriaDosGrafos.API
             APIUtil.UpdateClientes(context);
             Cliente loCliente = APIUtil.ValidarCliente(context);
 
-            MultiKeyDictionary<Vertice, Vertice, int> loMenorCaminho = APIUtil.GetMenorCaminhoFloydWarshall(loCliente.Grafo);
+            int aiIterationsCount;
+            MultiKeyDictionary<Vertice, Vertice, int> loMenorCaminho = APIUtil.FloydWarshall(loCliente.Grafo, out aiIterationsCount);
             string lsHtml = APIUtil.GetMatrizHTML(loMenorCaminho);
 
             context.Response.ContentType = ContentType.HTML;
@@ -180,7 +191,8 @@ namespace TeoriaDosGrafos.API
 
             if (loOrigem != null && loDestino != null)
             {
-                MultiKeyDictionary<Vertice, Vertice, int> loMenorCaminho = APIUtil.GetMenorCaminhoDijkstra(loCliente.Grafo, loOrigem, loDestino);
+                int aiIterationsCount;
+                MultiKeyDictionary<Vertice, Vertice, int> loMenorCaminho = APIUtil.Dijkstra(loCliente.Grafo, loOrigem, loDestino, out aiIterationsCount);
                 string lsHtml = APIUtil.GetMatrizHTML(loMenorCaminho);
 
                 context.Response.ContentType = ContentType.HTML;
@@ -208,7 +220,8 @@ namespace TeoriaDosGrafos.API
             int liID = Convert.ToInt32(loArgs["id"]);
 
             Vertice loVertice = APIUtil.FindVerticeByID(liID, loCliente.Grafo);
-            MultiKeyDictionary<Vertice, Vertice, int> loMenorCaminho = APIUtil.GetMenorCaminhoBellmanFord(loCliente.Grafo, loVertice);
+            int aiIterationsCount;
+            MultiKeyDictionary<Vertice, Vertice, int> loMenorCaminho = APIUtil.BellmanFord(loCliente.Grafo, loVertice, out aiIterationsCount);
 
             string lsHtml = APIUtil.GetMatrizHTML(loMenorCaminho);
 
@@ -540,30 +553,27 @@ namespace TeoriaDosGrafos.API
 
             Dictionary<string, string> loArgs = APIUtil.GetDictionaryFromContext(context);
 
-            if (loArgs.ContainsKey("vertice1") && loArgs.ContainsKey("vertice2"))
+            int liVertice, liVertice2;
+
+            if(Int32.TryParse(loArgs["vertice1"], out liVertice) && Int32.TryParse(loArgs["vertice2"], out liVertice2))
             {
-                try
-                {
-                    int liVertice1 = Convert.ToInt32(loArgs["vertice1"]);
-                    int liVertice2 = Convert.ToInt32(loArgs["vertice2"]);
+                Vertice loVertice = APIUtil.FindVerticeByID(liVertice, loCliente.Grafo);
+                Vertice loVertice2 = APIUtil.FindVerticeByID(liVertice2, loCliente.Grafo);
 
-                    if (APIUtil.FindVerticeByID(liVertice1, loCliente.Grafo) != null && APIUtil.FindVerticeByID(liVertice2, loCliente.Grafo) != null)
-                    {
-                        List<Aresta> loListaArestas = APIUtil.FindArestasByVerticesIDs(liVertice1, liVertice2, loCliente.Grafo);
-
-                        context.Response.ContentType = ContentType.JSON;
-                        context.Response.SendResponse(JsonConvert.SerializeObject(loListaArestas));
-                    }
-                    else
-                        context.Response.SendResponse(HttpStatusCode.NotFound);
-                }
-                catch (Exception ex)
+                if (loVertice != null && loVertice2 != null)
                 {
-                    Servidor.Server.Logger.Error(ex.Message);
-                    context.Response.SendResponse(HttpStatusCode.BadRequest);
+                    List<Aresta> loListaArestas = APIUtil.FindArestasByVerticesIDs(loCliente.Grafo, loVertice, loVertice2);
+
+                    context.Response.ContentType = ContentType.JSON;
+                    context.Response.SendResponse(JsonConvert.SerializeObject(loListaArestas));
                 }
+                else
+                    context.Response.SendResponse(HttpStatusCode.NotFound);
             }
-            return context;
+            else
+                context.Response.SendResponse(HttpStatusCode.BadRequest);
+
+            return context;       
         }
 
         /// <summary>
@@ -619,28 +629,26 @@ namespace TeoriaDosGrafos.API
 
             Dictionary<string, string> loArgs = APIUtil.GetDictionaryFromContext(context);
 
-            if (loArgs.ContainsKey("vertice1") && loArgs.ContainsKey("vertice2"))
-            {
-                try
-                {
-                    int liVertice1 = Convert.ToInt32(loArgs["vertice1"]);
-                    int liVertice2 = Convert.ToInt32(loArgs["vertice2"]);
+            int liVertice, liVertice2;
 
-                    if (APIUtil.FindVerticeByID(liVertice1, loCliente.Grafo) != null && APIUtil.FindVerticeByID(liVertice2, loCliente.Grafo) != null)
-                    {
-                        List<Aresta> loListaArestas = APIUtil.FindArestasByVerticesIDs(liVertice1, liVertice2, loCliente.Grafo);
-                        loCliente.Grafo.Arestas = loCliente.Grafo.Arestas.Except(loListaArestas).ToList();
-                        context.Response.SendResponse(HttpStatusCode.Ok);
-                    }
-                    else
-                        context.Response.SendResponse(HttpStatusCode.NotFound);
-                }
-                catch (Exception ex)
+            if (Int32.TryParse(loArgs["vertice1"], out liVertice) && Int32.TryParse(loArgs["vertice2"], out liVertice2))
+            {
+                Vertice loVertice = APIUtil.FindVerticeByID(liVertice, loCliente.Grafo);
+                Vertice loVertice2 = APIUtil.FindVerticeByID(liVertice2, loCliente.Grafo);
+
+                if (loVertice != null && loVertice2 != null)
                 {
-                    Servidor.Server.Logger.Error(ex.Message);
-                    context.Response.SendResponse(HttpStatusCode.BadRequest);
+                    List<Aresta> loListaArestas = APIUtil.FindArestasByVerticesIDs(loCliente.Grafo, loVertice, loVertice2);
+                    loCliente.Grafo.Arestas = loCliente.Grafo.Arestas.Except(loListaArestas).ToList();
+                    
+                    context.Response.SendResponse(HttpStatusCode.Ok);
                 }
+                else
+                    context.Response.SendResponse(HttpStatusCode.NotFound);
             }
+            else
+                context.Response.SendResponse(HttpStatusCode.BadRequest);
+
             return context;
         }
         #endregion

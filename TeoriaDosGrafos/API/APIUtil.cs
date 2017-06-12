@@ -2,6 +2,7 @@
 using Grapevine.Server;
 using Grapevine.Shared;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -17,6 +18,7 @@ namespace TeoriaDosGrafos.API
     public static class APIUtil
     {
         public const int INF = 9999;
+
         #region Grafos
 
         /// <summary>
@@ -118,25 +120,6 @@ namespace TeoriaDosGrafos.API
         /// </summary>
         /// <param name="aoGrafo"></param>
         /// <returns></returns>
-        public static MultiKeyDictionary<Vertice, Vertice, int> GetMatrizAcessibilidade(Grafo aoGrafo)
-        {
-            MultiKeyDictionary<Vertice, Vertice, int> loMatrizAdjacencia = GetMatrizAdjacencia(aoGrafo);
-
-            //Algoritmo de Warshall
-            foreach (Vertice loVertice in aoGrafo.Vertices)
-                foreach (Vertice loVertice2 in aoGrafo.Vertices)
-                    foreach (Vertice loVertice3 in aoGrafo.Vertices)
-                        loMatrizAdjacencia[loVertice2][loVertice3] =
-                            ((loMatrizAdjacencia[loVertice2][loVertice3] != 0) || ((loMatrizAdjacencia[loVertice2][loVertice] != 0) && (loMatrizAdjacencia[loVertice][loVertice3] != 0))) ? 1 : 0;
-            
-            return loMatrizAdjacencia;
-        }
-
-        /// <summary>
-        /// Gera matriz de adjacência.
-        /// </summary>
-        /// <param name="aoGrafo"></param>
-        /// <returns></returns>
         public static MultiKeyDictionary<Vertice, Vertice, int> GetMatrizAdjacenciaPeso(Grafo aoGrafo)
         {
             MultiKeyDictionary<Vertice, Vertice, int> loMatriz = new MultiKeyDictionary<Vertice, Vertice, int>();
@@ -145,7 +128,7 @@ namespace TeoriaDosGrafos.API
             {
                 foreach (Vertice loVertice2 in aoGrafo.Vertices)
                 {
-                    List<Aresta> loListaArestas = APIUtil.FindArestasByVerticesIDs(loVertice.ID, loVertice2.ID, aoGrafo).OrderBy(a => a.Peso).Cast<Aresta>().ToList();
+                    List<Aresta> loListaArestas = APIUtil.FindArestasByVerticesIDs(aoGrafo, loVertice, loVertice2).OrderBy(a => a.Peso).Cast<Aresta>().ToList();
                     Aresta loMenorAresta = (loListaArestas.Count != 0) ? loListaArestas[0] : null;
                     loMatriz[loVertice][loVertice2] = (loMenorAresta != null) ? loMenorAresta.Peso : INF;
                 }
@@ -165,85 +148,10 @@ namespace TeoriaDosGrafos.API
 
             foreach (Vertice loVertice in aoGrafo.Vertices)
                 foreach (Vertice loVertice2 in aoGrafo.Vertices)
-                    loMatriz[loVertice][loVertice2] = (APIUtil.FindArestasByVerticesIDs(loVertice.ID, loVertice2.ID, aoGrafo).Count > 0) ? 1 : 0;
+                    loMatriz[loVertice][loVertice2] = (APIUtil.FindArestasByVerticesIDs(aoGrafo, loVertice, loVertice2, true).Count > 0) ? 1 : 0;
 
             return loMatriz;
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="aoGrafo"></param>
-        /// <returns></returns>
-        public static MultiKeyDictionary<Vertice, Vertice, int> GetMenorCaminhoFloydWarshall(Grafo aoGrafo)
-        {
-            return FloydWarshall(aoGrafo);
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="aoGrafo"></param>
-        /// <param name="sourceID"></param>
-        /// <returns></returns>
-        public static MultiKeyDictionary<Vertice, Vertice, int> GetMenorCaminhoDijkstra(Grafo aoGrafo, Vertice aoVerticeOrigem, Vertice aoVerticeDestino)
-        {
-            MultiKeyDictionary<Vertice, Vertice, int> loMatriz = GetMatrizAdjacenciaPeso(aoGrafo);
-
-            MultiKeyDictionary<Vertice, Vertice, int> loDistanceMatriz = new MultiKeyDictionary<Vertice, Vertice, int>();
-            Dictionary<Vertice, int> loDistance = loDistanceMatriz[aoVerticeOrigem];
-
-            Dictionary<Vertice, bool> loShortestPathTreeSet = new Dictionary<Vertice, bool>();
-
-            aoGrafo.Vertices.ForEach(v =>
-            {
-                loDistance[v] = INF;
-                loShortestPathTreeSet[v] = false;
-            });
-
-            loDistance[aoVerticeOrigem] = 0;
-
-
-            foreach (Vertice loVertice in aoGrafo.Vertices.Except(new List<Vertice> { aoVerticeOrigem }))
-            {
-                Vertice u = MinimumDistance(loDistance, loShortestPathTreeSet, aoGrafo.Vertices);
-                loShortestPathTreeSet[u] = true;
-
-                if (!loShortestPathTreeSet[aoVerticeDestino] && Convert.ToBoolean(loMatriz[u][aoVerticeDestino]) && loDistance[u] != INF && loDistance[u] + loMatriz[u][aoVerticeDestino] < loDistance[aoVerticeDestino])
-                    loDistance[aoVerticeDestino] = loDistance[u] + loMatriz[u][aoVerticeDestino];
-            }
-
-            //Remover os vértices que não são destino da matriz
-            foreach (Vertice loVertice in aoGrafo.Vertices.Except(new List<Vertice> { aoVerticeDestino }))
-                loDistance.Remove(loVertice);
-
-            return loDistanceMatriz;
-        }
-
-        /// <summary>
-        /// Uma função utilitária para achar o vértice com a menor distância do conjunto de
-        /// vértices que ainda não foram incluídos na árvore de menor caminho.
-        /// </summary>
-        /// <param name="aoDistance"></param>
-        /// <param name="aoShortestPathTreeSet"></param>
-        /// <param name="aoVertices"></param>
-        /// <returns></returns>
-        private static Vertice MinimumDistance(Dictionary<Vertice, int> aoDistance, Dictionary<Vertice, bool> aoShortestPathTreeSet, List<Vertice> aoVertices)
-        {
-            int liMin = INF;
-            Vertice loMinVertice = null;
-
-            foreach (Vertice loVertice in aoVertices)
-            {
-                if (!aoShortestPathTreeSet[loVertice] && aoDistance[loVertice] <= liMin)
-                {
-                    liMin = aoDistance[loVertice];
-                    loMinVertice = loVertice;
-                }
-            }
-
-            return loMinVertice;
-        }
-
 
         #endregion
 
@@ -431,6 +339,15 @@ namespace TeoriaDosGrafos.API
         #region Arestas
 
         /// <summary>
+        /// Valida a aresta, verificando se a origem e o destino existem.
+        /// </summary>
+        /// <returns></returns>
+        public static bool IsArestaValida(Grafo aoGrafo, Aresta aoAresta)
+        {
+            return aoGrafo.Vertices.Exists(v => v.ID == aoAresta.Origem) && aoGrafo.Vertices.Exists(v => v.ID == aoAresta.Destino);
+        }
+
+        /// <summary>
         /// Converte uma string com uma lista de arestas em um objeto List<Aresta>.
         /// </summary>
         /// <param name="asArestas"></param>
@@ -452,12 +369,6 @@ namespace TeoriaDosGrafos.API
             return aoGrafo.Arestas.FindAll(a => a.Origem == aiID || a.Destino == aiID);
         }
 
-
-        public static List<Aresta> GetArestasFromVertice(int aiID, Grafo aoGrafo)
-        {
-            return aoGrafo.Arestas.FindAll(a => a.Origem == aiID);
-        }
-
         /// <summary>
         /// Retorna todas as arestas ligando dois vértices.
         /// </summary>
@@ -465,11 +376,12 @@ namespace TeoriaDosGrafos.API
         /// <param name="aiIDVertice2"></param>
         /// <param name="aoGrafo"></param>
         /// <returns></returns>
-        public static List<Aresta> FindArestasByVerticesIDs(int aiIDVertice1, int aiIDVertice2, Grafo aoGrafo)
+        public static List<Aresta> FindArestasByVerticesIDs(Grafo aoGrafo, Vertice aoVertice, Vertice aoVertice2, bool abConsiderarDirecao = false)
         {
-            return aoGrafo.Arestas.FindAll(a => (a.Origem == aiIDVertice1 && a.Destino == aiIDVertice2) ||
-                                                       (a.Origem == aiIDVertice2 && a.Destino == aiIDVertice1));
-            //return aoGrafo.Arestas.FindAll(a => a.Origem == aiIDVertice1 && a.Destino == aiIDVertice2);
+            return (abConsiderarDirecao)
+                ? aoGrafo.Arestas.FindAll(a => a.Origem == aoVertice.ID && a.Destino == aoVertice2.ID)
+                : aoGrafo.Arestas.FindAll(a => (a.Origem == aoVertice.ID && a.Destino == aoVertice2.ID) ||
+                                                       (a.Origem == aoVertice2.ID && a.Destino == aoVertice.ID));
         }
 
         /// <summary>
@@ -484,7 +396,7 @@ namespace TeoriaDosGrafos.API
 
             foreach (Aresta loAresta in aoListaArestas)
             {
-                if (loAresta.IsArestaValida(aoGrafo))
+                if (IsArestaValida(aoGrafo, loAresta))
                     loListaArestas.Add(loAresta);
             }
 
@@ -494,9 +406,30 @@ namespace TeoriaDosGrafos.API
         #endregion
 
         #region Algoritmos
-        public static MultiKeyDictionary<Vertice, Vertice, int> FloydWarshall(Grafo aoGrafo)
+
+        /// <summary>
+        /// Gera matriz de adjacência.
+        /// </summary>
+        /// <param name="aoGrafo"></param>
+        /// <returns></returns>
+        public static MultiKeyDictionary<Vertice, Vertice, int> Warshall(Grafo aoGrafo)
+        {
+            MultiKeyDictionary<Vertice, Vertice, int> loMatrizAdjacencia = GetMatrizAdjacencia(aoGrafo);
+
+            foreach (Vertice loVertice in aoGrafo.Vertices)
+                foreach (Vertice loVertice2 in aoGrafo.Vertices)
+                    foreach (Vertice loVertice3 in aoGrafo.Vertices)
+                        loMatrizAdjacencia[loVertice2][loVertice3] =
+                            ((loMatrizAdjacencia[loVertice2][loVertice3] != 0) || ((loMatrizAdjacencia[loVertice2][loVertice] != 0) && (loMatrizAdjacencia[loVertice][loVertice3] != 0))) ? 1 : 0;
+
+            return loMatrizAdjacencia;
+        }
+
+
+        public static MultiKeyDictionary<Vertice, Vertice, int> FloydWarshall(Grafo aoGrafo, out int aiIterationsCount)
         {
             MultiKeyDictionary<Vertice, Vertice, int> loDistance = GetMatrizAdjacenciaPeso(aoGrafo);
+            aiIterationsCount = 0;
 
             foreach (Vertice loVertice in aoGrafo.Vertices)
             {
@@ -506,6 +439,8 @@ namespace TeoriaDosGrafos.API
                     {
                         if (loDistance[loVertice2][loVertice] + loDistance[loVertice][loVertice3] < loDistance[loVertice2][loVertice3])
                             loDistance[loVertice2][loVertice3] = loDistance[loVertice2][loVertice] + loDistance[loVertice][loVertice3];
+
+                        aiIterationsCount++;
                     }
                 }
             }
@@ -514,48 +449,109 @@ namespace TeoriaDosGrafos.API
         }
 
 
-        public static MultiKeyDictionary<Vertice, Vertice, int> GetMenorCaminhoBellmanFord(Grafo aoGrafo, Vertice aoOrigem)
+        public static MultiKeyDictionary<Vertice, Vertice, int> BellmanFord(Grafo aoGrafo, Vertice aoOrigem, out int aiIterationsCount)
         {
             MultiKeyDictionary<Vertice, Vertice, int> loDistanceMatriz = new MultiKeyDictionary<Vertice, Vertice, int>();
             Dictionary<Vertice, int> loDistance = loDistanceMatriz[aoOrigem];
+            aiIterationsCount = 0;
 
             aoGrafo.Vertices.ForEach(v => loDistance[v] = INF);
 
             loDistance[aoOrigem] = 0;
-            bool lbChanged;
 
-            do
+            for (int i = 0; i < aoGrafo.Vertices.Count - 1; i++)
             {
-                lbChanged = false;
-
                 foreach (Vertice loVertice in aoGrafo.Vertices)
                 {
                     if (loDistance[loVertice] != INF)
                     {
-                        foreach (Aresta loAresta in GetArestasFromVertice(loVertice.ID, aoGrafo))
+                        foreach (Aresta loAresta in GetArestasOfVertice(loVertice.ID, aoGrafo))
                         {
                             Vertice loDestino = FindVerticeByID(loAresta.Destino, aoGrafo);
                             int liDistance = loDistance[loVertice] + loAresta.Peso;
 
                             if (liDistance < loDistance[loDestino])
                             {
-                                lbChanged = true;
+                                //lbChanged = true;
                                 loDistance[loDestino] = liDistance;
                             }
 
+                            aiIterationsCount++;
                         }
                     }
                 }
-
-            } while (lbChanged);
-
+            }
+            
             return loDistanceMatriz;
 
         }
 
-        public static void Floyd(Grafo aoGrafo)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="aoGrafo"></param>
+        /// <param name="sourceID"></param>
+        /// <returns></returns>
+        public static MultiKeyDictionary<Vertice, Vertice, int> Dijkstra(Grafo aoGrafo, Vertice aoVerticeOrigem, Vertice aoVerticeDestino, out int aiIterationsCount)
         {
-            //ToDo
+            MultiKeyDictionary<Vertice, Vertice, int> loMatriz = GetMatrizAdjacenciaPeso(aoGrafo);
+
+            MultiKeyDictionary<Vertice, Vertice, int> loDistanceMatriz = new MultiKeyDictionary<Vertice, Vertice, int>();
+            Dictionary<Vertice, int> loDistance = loDistanceMatriz[aoVerticeOrigem];
+
+            Dictionary<Vertice, bool> loShortestPathTreeSet = new Dictionary<Vertice, bool>();
+
+            aiIterationsCount = 0;
+
+            aoGrafo.Vertices.ForEach(v =>
+            {
+                loDistance[v] = INF;
+                loShortestPathTreeSet[v] = false;
+            });
+
+            loDistance[aoVerticeOrigem] = 0;
+
+            foreach (Vertice loVertice in aoGrafo.Vertices.Except(new List<Vertice> { aoVerticeOrigem }))
+            {
+                Vertice u = MinimumDistance(loDistance, loShortestPathTreeSet, aoGrafo.Vertices, ref aiIterationsCount);
+                loShortestPathTreeSet[u] = true;
+
+                if (!loShortestPathTreeSet[aoVerticeDestino] && Convert.ToBoolean(loMatriz[u][aoVerticeDestino]) && loDistance[u] != INF && loDistance[u] + loMatriz[u][aoVerticeDestino] < loDistance[aoVerticeDestino])
+                    loDistance[aoVerticeDestino] = loDistance[u] + loMatriz[u][aoVerticeDestino];
+            }
+
+            int liValue = loDistance[aoVerticeDestino];
+            loDistance.Clear();
+            loDistance[aoVerticeDestino] = liValue;
+
+            return loDistanceMatriz;
+        }
+
+        /// <summary>
+        /// Uma função utilitária para achar o vértice com a menor distância do conjunto de
+        /// vértices que ainda não foram incluídos na árvore de menor caminho.
+        /// </summary>
+        /// <param name="aoDistance"></param>
+        /// <param name="aoShortestPathTreeSet"></param>
+        /// <param name="aoVertices"></param>
+        /// <returns></returns>
+        private static Vertice MinimumDistance(Dictionary<Vertice, int> aoDistance, Dictionary<Vertice, bool> aoShortestPathTreeSet, List<Vertice> aoVertices, ref int aiIterationsCount)
+        {
+            int liMin = INF;
+            Vertice loMinVertice = null;
+
+            foreach (Vertice loVertice in aoVertices)
+            {
+                if (!aoShortestPathTreeSet[loVertice] && aoDistance[loVertice] <= liMin)
+                {
+                    liMin = aoDistance[loVertice];
+                    loMinVertice = loVertice;
+                }
+
+                aiIterationsCount++;
+            }
+
+            return loMinVertice;
         }
 
         #endregion

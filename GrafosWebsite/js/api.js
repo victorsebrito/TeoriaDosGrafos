@@ -7,18 +7,10 @@ $.ajaxSetup({
             request.setRequestHeader('X-Grafo-ID', grafoID);
         else if (this.url !== host + 'api/grafo' && this.type !== 'POST')
             console.log("Not authorized");
-
-        $.LoadingOverlay("show", {
-            color: "white",
-            image: "img/loading.gif"
-        });
     },
     error: function (data, status, request) {
         alerta(false);
         console.log(new api.Response(data, status, request));
-    },
-    complete: function () {
-        $.LoadingOverlay("hide");
     }
 });
 
@@ -58,7 +50,7 @@ var rest = {
 
         return apiResponse;
     }
-}
+};
 
 var api = {
     Response: function (data, status, request) {
@@ -70,10 +62,7 @@ var api = {
     grafo: {
         get: function () {
             rest.get('api/grafo', function (data, status, request) {
-                $pre = $('#lerGrafo').find('pre');
-                $pre.removeClass('prettyprinted');
-                $pre.text(JSON.stringify(data, null, '\t'));
-                PR.prettyPrint();
+                showJSON('#lerGrafo', data);
                 changePage('#lerGrafo');
             });
         },
@@ -136,7 +125,7 @@ var api = {
                         .on("end", dragended));
 
                 node.append("title")
-                    .text(function (d) { return ((d.id) + ((d.nome !== undefined) ? ' (' + d.nome + ')' : '')); });
+                    .text(function (d) { return d.id + d.nome !== undefined ? ' (' + d.nome + ')' : ''; });
 
                 simulation
                     .nodes(graph.Vertices)
@@ -187,12 +176,12 @@ var api = {
         menorCaminhoBellmanFord: function (data) {
             rest.post('api/grafo/menorCaminhoBellmanFord', data, function (data, status, request) {
                 $('#menorCaminhoBellmanFord').find('.placeholder').html(data).show();
-               // $('#menorCaminhoBellmanFord').find('form').hide();
+                // $('#menorCaminhoBellmanFord').find('form').hide();
             });
         },
         getBenchmark: function (data) {
             rest.post('api/grafo/benchmark', data, function (data, status, request) {
-                $('#benchmark').find('.placeholder').html(data).show();                
+                showJSON('#benchmark', data);
             });
         },
         grau: function () {
@@ -209,8 +198,8 @@ var api = {
         },
         conexo: function () {
             rest.get('api/grafo/conexo', function (data, status, request) {
-                var icon = (data) ? 'check_circle' : 'cancel';
-                var color = (data) ? 'green' : 'red';
+                var icon = data ? 'check_circle' : 'cancel';
+                var color = data ? 'green' : 'red';
 
                 $('#is-conexo-icon').text(icon);
                 $('#is-conexo-icon').css('color', color);
@@ -219,14 +208,14 @@ var api = {
         },
         euler: function () {
             rest.get('api/grafo/euler', function (data, status, request) {
-                var icon = (data) ? 'check_circle' : 'cancel';
-                var color = (data) ? 'green' : 'red';
+                var icon = data ? 'check_circle' : 'cancel';
+                var color = data ? 'green' : 'red';
 
                 $('#possui-euler-icon').text(icon);
                 $('#possui-euler-icon').css('color', color);
                 changePage('#possuiEuler');
             });
-        },
+        }
     },
 
     vertice: {
@@ -242,20 +231,12 @@ var api = {
         },
         arestas: function (data) {
             rest.post('api/vertice/arestas', data, function (data, status, request) {
-                $pre = $('#arestasVertice').find('pre');
-                $pre.removeClass('prettyprinted');
-                $pre.text(JSON.stringify(data, null, '\t'));
-                PR.prettyPrint();
-                $pre.show();
+                showJSON('#arestasVertice', data);
             });
         },
         adjacentes: function (data) {
             rest.post('api/vertice/adjacentes', data, function (data, status, request) {
-                $pre = $('#verticesAdjacentes').find('pre');
-                $pre.removeClass('prettyprinted');
-                $pre.text(JSON.stringify(data, null, '\t'));
-                PR.prettyPrint();
-                $pre.show();
+                showJSON('#verticesAdjacentes', data);
             });
         },
         grau: function (data) {
@@ -279,32 +260,8 @@ var api = {
         },
         lista: function (data) {
             rest.post('api/aresta/lista', data, function (data, status, request) {
-                $pre = $('#arestasEntreVertices').find('pre');
-                $pre.removeClass('prettyprinted');
-                $pre.text(JSON.stringify(data, null, '\t'));
-                PR.prettyPrint();
-                $pre.show();
+                showJSON('#arestasEntreVertices', data);
             });
         }
-    },
-
-    benchmark: {
-
-    },
-    tabela: {
-        function(linhas, colunas) {
-            linhas = 6;
-            colunas = 7;
-
-            for (var i = 0; i < rows; i++) {
-                $('table').append('<tr></tr>');
-                for (var j = 0; j < cols; j++) {
-                    $('table').find('tr').eq(i).append('<td></td>');
-                    $('table').find('tr').eq(i).find('td').eq(j).attr('data-row', i).attr('data-col', j);
-                }
-            }
-        }
     }
-
-
-}
+};
