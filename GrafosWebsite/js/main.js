@@ -58,17 +58,30 @@ $(document).ready(function () {
     $('input[type=radio][name=leitura]').change(function () {
         if (this.value === 'arquivo') {
             $('.inserir-dados').hide();
+            $('.gerar').hide();
             $('.arquivo').show();
             $('.arquivo').find('input').prop('required', true);
         }
         else if (this.value === 'inserir') {
             $('.arquivo').hide();
+            $('.gerar').hide();
             $('.inserir-dados').show();
             $('.inserir-dados').find('input').prop('required', true);
+        }
+        else if (this.value === 'gerar') {
+            $('.inserir-dados').hide();
+            $('.arquivo').hide();
+            $('.gerar').show();
+            $('.gerar').find('input').prop('required', true);
         }
     });
 
 });
+
+//https://stackoverflow.com/a/1527820/7553857
+var getRandomInt = function(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 
 var getQueryString = function (form) {
     var inputs = $(form).serializeArray();
@@ -86,6 +99,39 @@ var getQueryString = function (form) {
             api.grafo.post('json=' + fr.result);
         };
         fr.readAsText(file);
+    }
+
+    else if (inputs[0].value === 'gerar') {
+        queryString = false;
+
+        var qntVertices = $('form #qnt-vertices').val();
+        var qntArestas = $('form #qnt-arestas').val();
+
+        var json = new Object();
+        json.Vertices = new Array();
+        json.Arestas = new Array();
+
+        for (i = 1; i <= qntVertices; i++) {
+            var vertice = new Object();
+            vertice.id = i;
+            vertice.nome = i.toString();
+
+            json.Vertices.push(vertice);
+        };
+
+        for (i = 1; i <= qntVertices; i++) {
+            for (i2 = 1; i2 <= qntArestas; i2++) {
+                var aresta = new Object();
+                aresta.source = i;
+                aresta.target = getRandomInt(1, qntVertices);
+                aresta.peso = getRandomInt(1, 10);
+
+                json.Arestas.push(aresta);
+            }
+        }
+
+        api.grafo.post('json=' + JSON.stringify(json));
+
     }
 
     else {

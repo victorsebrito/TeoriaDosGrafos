@@ -83,8 +83,9 @@
                     <h1>Novo Grafo</h1>
                     <form id="form-novo-grafo" onsubmit="return novoGrafo()" method="post" novalidate>
                         <div class="radio">
-                            <label><input type="radio" name="leitura" value="arquivo" checked>Ler do Arquivo</label>
+                            <label><input type="radio" name="leitura" value="arquivo" checked>Ler do arquivo</label>
                             <label><input type="radio" name="leitura" value="inserir">Inserir dados</label>
+                            <label><input type="radio" name="leitura" value="gerar">Gerar grafo</label>
                         </div>
 
                         <div class="arquivo">
@@ -168,6 +169,28 @@
                                 </div>
                             </div>
                         </div>
+
+                        <div class="gerar" style="display:none">
+                            <div class="row lista-vertices">
+                                <div class="item-vertice">
+                                    <div class="col-md-12">
+                                        <div class="col-sm-6">
+                                            <div class="form-group required">
+                                                <label for="qnt-vertices" class="control-label">Qnt. de vértices:</label>
+                                                <input type="number" min="1" class="form-control" name="qnt-vertices" id="qnt-vertices">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group required">
+                                                <label for="qnt-arestas" class="control-label">Qnt. de arestas por vértice:</label>
+                                                <input type="number" min="1" class="form-control" name="qnt-arestas" id="qnt-arestas">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="row">
                             <div class="col-md-12 text-right">
                                 <!--<button type="button" class="btn btn-default" id="clear-form-info">Limpar</button>-->
